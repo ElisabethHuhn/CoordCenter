@@ -1,0 +1,2240 @@
+<HorizontalScrollView
+    xmlns:android = "http://schemas.android.com/apk/res/android"
+    xmlns:tools =   "http://schemas.android.com/tools"
+    tools:context = "com.androidchicken.coordcenter.MainActivity"
+    android:layout_width  = "match_parent"
+    android:layout_height = "match_parent"
+    android:background    = "@color/colorScreenBackground"
+    android:orientation   = "vertical"
+    android:weightSum     = "1"
+    android:fillViewport  = "true"
+    >
+    <!-- This layout is for main conversion screen -->
+    <!-- coordinate conversion between  -->
+    <!-- GPS WGS84 lat/long      -->
+    <!-- Meaned WGS84 lat/long   -->
+    <!-- State Plane Coordinates -->
+    <!-- UTM                     -->
+
+
+
+    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            >
+            <!-- Page Title -->
+            <TextView
+                android:text="@string/coordinate_measure"
+
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_gravity="center_horizontal"
+
+                android:textColor="@color/colorTextBlack"
+                android:background="@color/colorScreenBackground"
+                />
+
+            <!-- Data Source Spinner -->
+            <LinearLayout
+
+                android:layout_height="wrap_content"
+                android:layout_width ="match_parent"
+                android:orientation="horizontal"
+                android:layout_gravity="center_horizontal"
+                android:paddingTop="@dimen/row_between_rows_margin"
+                >
+                <TextView
+                    android:labelFor="@+id/data_source_spinner"
+                    android:text="@string/data_source_label"
+                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:layout_weight="25"
+                    android:gravity="end"
+
+                    android:layout_marginStart="@dimen/row_cap_margin"
+                    android:textColor="@color/colorTextBlack"
+                    android:background="@color/colorScreenBackground"
+                    />
+
+                <!--  Spinner to indicate the type of coordinate for the points in this project -->
+                <Spinner
+                    android:id            = "@+id/data_source_spinner"
+                    android:layout_width  = "0dp"
+                    android:layout_height = "wrap_content"
+                    android:layout_weight="75"
+                    android:layout_marginEnd="@dimen/row_cap_margin"
+                    android:textColor="@color/colorTextBlack"
+                    android:background="@color/colorWhite"
+                    />
+
+            </LinearLayout>
+
+            <!-- Buttons -->
+            <!-- Save, Convert, Start/Stop Data, Start/Stop Mean,  Clear Form Button -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingTop="@dimen/row_between_rows_margin"
+                >
+                <!-- Start / Stop Data -->
+                <Button
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:id="@+id/startStopDataButton"
+                    android:text="@string/start_stop_data"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+
+                    android:gravity="center"
+
+                    android:layout_weight="25"
+
+                    android:layout_marginStart="@dimen/row_cap_margin"
+                    android:layout_marginEnd="@dimen/row_between_fields_margin"
+
+                    android:background="@color/colorGrayer"
+                    android:textColor="@color/colorTextBlack"
+                    />
+
+                <!-- Start/Stop Mean -->
+                <Button
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:id="@+id/startMeanButton"
+                    android:text="@string/start_stop_mean"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+
+                    android:gravity="center"
+
+                    android:layout_weight="25"
+
+                    android:layout_marginEnd="@dimen/row_cap_margin"
+
+                    android:background="@color/colorGrayer"
+                    android:textColor="@color/colorTextBlack"
+                    />
+
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingTop="@dimen/row_between_rows_margin"
+                >
+
+
+                <!-- Conversion Button -->
+                <Button
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:id="@+id/convertButton"
+                    android:text="@string/convert_button_label"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+
+                    android:gravity="center"
+
+                    android:layout_weight="25"
+
+                    android:layout_marginStart="@dimen/row_cap_margin"
+                    android:layout_marginEnd="@dimen/row_between_fields_margin"
+
+                    android:background="@color/colorGray"
+                    android:textColor="@color/colorTextBlack"
+                    />
+                <!-- Clear Form Button -->
+                <Button
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:id="@+id/clearFormButton"
+                    android:text="@string/clear_form_button_label"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+
+                    android:layout_weight="25"
+
+                    android:layout_marginEnd="@dimen/row_cap_margin"
+
+                    android:background="@color/colorGrayer"
+                    android:textColor="@color/colorTextBlack"
+                    />
+
+            </LinearLayout>
+
+            <!-- Row: distance units -->
+            <LinearLayout
+
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_gravity="center_horizontal"
+                android:paddingTop="@dimen/row_between_rows_margin"
+                >
+
+                <TextView
+                    android:labelFor="@+id/measureDistanceUnitsInput"
+                    android:text="@string/distance_units_label"
+                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:layout_weight="25"
+                    android:gravity="end"
+
+                    android:layout_marginStart="@dimen/row_cap_margin"
+
+                    android:textColor="@color/colorTextBlack"
+                    android:background="@color/colorScreenBackground"
+                    />
+                <TextView
+                    android:id="@id/measureDistanceUnitsInput"
+
+                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:layout_weight="65"
+                    android:gravity="center"
+
+                    android:inputType="text"
+                    android:imeOptions="flagNoExtractUi"
+                    android:layout_marginEnd="@dimen/row_cap_margin"
+
+                    android:enabled="false"
+
+                    android:textColor="@color/colorTextBlack"
+                    android:background="@color/colorGray"
+                    />
+
+            </LinearLayout>
+
+            <!-- GPS and Mean Status -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_gravity="center"
+                android:paddingTop="@dimen/row_between_rows_margin"
+
+                >
+                <!-- Mean in progress -->
+                <TextView
+                    android:id="@+id/gpsMeanInProgressOutput"
+                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:layout_gravity="center_horizontal"
+                    android:gravity="center"
+                    android:layout_weight="10"
+
+                    android:layout_marginStart="@dimen/row_cap_margin"
+                    android:layout_marginEnd="@dimen/row_between_fields_margin"
+
+                    android:text="@string/mean_not_in_progress_string"
+                    android:textColor="@color/colorTextBlack"
+                    android:background="@color/colorWhite"
+                    />
+
+                <!-- GPS on/off indicator -->
+                <TextView
+                    android:id="@+id/gps_on_off_output"
+
+                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:layout_gravity="center_horizontal"
+                    android:gravity="center"
+                    android:layout_weight="10"
+
+                    android:layout_marginEnd="@dimen/row_cap_margin"
+
+                    android:text="@string/gps_off"
+                    android:textColor="@color/colorTextBlack"
+                    android:background="@color/colorWhite"
+                    />
+
+        </LinearLayout>
+
+            <!--                            -->
+            <!--  ***********************   -->
+            <!--  ** Coordinate Blocks **   -->
+            <!--  ***********************   -->
+            <!--                            -->
+            <!--  Raw WGS84 lat/long Block  -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingTop="10dp"
+
+                >
+                 <!-- GPS Location Prompt -->
+                <TextView
+                    android:text="@string/gps_raw_data_prompt"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:gravity="center"
+
+                    android:layout_marginBottom="@dimen/row_between_rows_margin"
+
+                    android:textColor="@color/colorTextBlack"
+                    android:background="@color/colorYellowish"
+                    />
+
+
+                <!-- Time from current GPS NMEA Sentence -->
+                <!-- current time -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_gravity="center"
+                    android:layout_marginBottom="@dimen/row_between_rows_margin"
+
+                    >
+                    <TextView
+                        android:text="@string/gps_time_label"
+                        android:layout_height="wrap_content"
+                        android:layout_width="0dp"
+                        android:layout_weight="15"
+                        android:gravity="end"
+
+                        android:layout_marginStart="@dimen/row_cap_margin"
+
+                        android:textColor="@color/colorTextBlack"
+                        android:background="@color/colorScreenBackground"
+                    />
+
+                    <TextView
+                        android:id="@+id/gpsWgs84TimestampOutput"
+                        android:hint="@string/gps_timestamp_label"
+                        android:layout_height="wrap_content"
+                        android:layout_width="0dp"
+                        android:layout_weight="75"
+                        android:gravity="center"
+                        android:enabled="false"
+
+                        android:layout_marginEnd="@dimen/row_cap_margin"
+
+                        android:textColor="@color/colorTextBlack"
+                        android:background="@color/colorWhite"
+                        />
+                </LinearLayout>
+
+                <!-- Latitude Label and input fields -->
+                <!-- break out into separate fields -->
+                <!-- decimal degrees/degrees/minutes/seconds -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="@dimen/row_between_rows_margin"
+
+                    >
+                    <!-- Latitude Label -->
+                    <TextView
+                        android:id="@+id/gpsWgs84LatitudeInputLabel"
+                        android:text="@string/latitude_label"
+                        android:layout_height="wrap_content"
+                        android:layout_width="0dp"
+                        android:layout_weight="15"
+                        android:gravity="end"
+
+                        android:layout_marginStart="@dimen/row_cap_margin"
+                        android:textColor="@color/colorTextBlack"
+                        android:background="@color/colorScreenBackground"
+                        />
+                    <!-- Direction -->
+                    <EditText
+                        android:id="@+id/gpsWgs84LatDirInput"
+                        android:hint="@string/type_lat_dir"
+
+                        android:layout_height="wrap_content"
+                        android:layout_width="0dp"
+                        android:layout_weight="5"
+                        android:gravity="center"
+
+                        android:inputType="textCapCharacters"
+                        android:enabled="false"
+
+                        android:layout_marginEnd="@dimen/row_between_fields_margin"
+
+                        android:textColor="@color/colorTextBlack"
+                        android:background="@color/colorGrayish"
+                        />
+                    <!-- Decimal Degrees -->
+                    <EditText
+                        android:id="@+id/gpsWgs84LatitudeInput"
+                        android:hint="@string/type_decimal_degrees_label"
+
+                        android:layout_height="wrap_content"
+                        android:layout_width="0dp"
+                        android:layout_weight="60"
+                        android:gravity="center"
+
+                        android:inputType="numberSigned|numberDecimal"
+                        android:enabled="false"
+
+                        android:layout_marginEnd="@dimen/row_cap_margin"
+
+                        android:textColor="@color/colorTextBlack"
+                        android:background="@color/colorGrayish"
+                        />
+                    <!-- degrees -->
+                    <EditText
+                        android:id="@+id/gpsWgs84LatDegreesInput"
+                        android:hint="@string/type_degrees_label"
+                        android:layout_height="wrap_content"
+                        android:layout_width="0dp"
+                        android:layout_weight="15"
+                        android:gravity="center"
+
+                        android:inputType="numberSigned|number"
+                        android:enabled="false"
+
+
+                        android:layout_marginEnd="@dimen/row_between_fields_margin"
+
+                        android:textColor="@color/colorTextBlack"
+                        android:background="@color/colorWhite"
+                        />
+                    <!-- minutes -->
+                    <EditText
+                        android:id="@+id/gpsWgs84LatMinutesInput"
+                        android:hint="@string/type_minutes_label"
+
+                        android:layout_height="wrap_content"
+                        android:layout_width="0dp"
+                        android:layout_weight="15"
+                        android:gravity="center"
+
+                        android:inputType="numberSigned|number"
+                        android:enabled="false"
+
+                        android:layout_marginEnd="@dimen/row_between_fields_margin"
+
+                        android:textColor="@color/colorTextBlack"
+                        android:background="@color/colorWhite"
+                        />
+                    <!-- seconds -->
+                    <EditText
+                        android:id="@+id/gpsWgs84LatSecondsInput"
+                        android:hint="@string/type_seconds_label"
+
+                        android:layout_height="wrap_content"
+                        android:layout_width="0dp"
+                        android:layout_weight="35"
+                        android:gravity="center"
+
+                        android:inputType="numberSigned|numberDecimal"
+                        android:enabled="false"
+
+                        android:layout_marginEnd="@dimen/row_cap_margin"
+
+                        android:textColor="@color/colorTextBlack"
+                        android:background="@color/colorWhite"
+                        />
+
+                </LinearLayout>
+
+                <!-- Longitude Label and input fields -->
+                <!-- break out into separate fields -->
+                <!-- decimal degrees/degrees/minutes/seconds -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="@dimen/row_between_rows_margin"
+
+                    >
+                    <!-- Longitude Label -->
+                    <TextView
+                        android:id="@+id/gpsWgs84LongitudeInputLabel"
+                        android:text="@string/longitude_label"
+                        android:layout_height="wrap_content"
+                        android:layout_width="0dp"
+                        android:layout_weight="15"
+
+                        android:gravity="end"
+
+                        android:layout_marginStart="@dimen/row_cap_margin"
+                        android:textColor="@color/colorTextBlack"
+                        android:background="@color/colorScreenBackground"
+                        />
+                    <!-- Direction -->
+                    <EditText
+                        android:id="@+id/gpsWgs84LngDirInput"
+                        android:hint="@string/type_lng_dir"
+
+                        android:layout_height="wrap_content"
+                        android:layout_width="0dp"
+                        android:layout_weight="5"
+                        android:gravity="center"
+
+                        android:inputType="textCapCharacters"
+                        android:enabled="false"
+
+                        android:layout_marginEnd="@dimen/row_between_fields_margin"
+
+                        android:textColor="@color/colorTextBlack"
+                        android:background="@color/colorGrayish"
+                        />
+                    <!-- Decimal Degrees -->
+                    <EditText
+                        android:id="@+id/gpsWgs84LongitudeInput"
+                        android:hint="@string/type_decimal_degrees_label"
+
+                        android:layout_height="wrap_content"
+                        android:layout_width="0dp"
+                        android:layout_weight="60"
+
+                        android:gravity="center"
+                        android:inputType="numberSigned|numberDecimal"
+                        android:enabled="false"
+
+                        android:layout_marginEnd="@dimen/row_cap_margin"
+
+                        android:textColor="@color/colorTextBlack"
+                        android:background="@color/colorGrayish"
+                        />
+                    <!-- degrees -->
+                    <EditText
+                        android:id="@+id/gpsWgs84LongDegreesInput"
+                        android:hint="@string/type_degrees_label"
+                        android:layout_height="wrap_content"
+                        android:layout_width="0dp"
+                        android:layout_weight="15"
+                        android:gravity="center"
+
+                        android:inputType="numberSigned|number"
+                        android:enabled="false"
+
+                        android:layout_marginEnd="@dimen/row_between_fields_margin"
+
+                        android:textColor="@color/colorTextBlack"
+                        android:background="@color/colorWhite"
+                        />
+                    <!-- minutes -->
+                    <EditText
+                        android:id="@+id/gpsWgs84LongMinutesInput"
+                        android:hint="@string/type_minutes_label"
+
+                        android:layout_height="wrap_content"
+                        android:layout_width="0dp"
+                        android:layout_weight="15"
+                        android:gravity="center"
+
+                        android:inputType="numberSigned|number"
+                        android:enabled="false"
+
+                        android:layout_marginEnd="@dimen/row_between_fields_margin"
+
+                        android:textColor="@color/colorTextBlack"
+                        android:background="@color/colorWhite"
+                        />
+                    <!-- seconds -->
+                    <EditText
+                        android:id="@+id/gpsWgs84LongSecondsInput"
+                        android:hint="@string/type_seconds_label"
+
+                        android:layout_height="wrap_content"
+                        android:layout_width="0dp"
+                        android:layout_weight="35"
+                        android:gravity="center"
+
+                        android:inputType="numberSigned|numberDecimal"
+                        android:enabled="false"
+
+                        android:layout_marginEnd="@dimen/row_cap_margin"
+
+
+                        android:textColor="@color/colorTextBlack"
+                        android:background="@color/colorWhite"
+                        />
+
+                </LinearLayout>
+
+                <!-- Convergence / Scale Factor -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginTop="@dimen/row_between_rows_margin"
+                    >
+
+                    <!-- Convergence / Scale Factor -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+
+                        >
+
+                        <!-- Convergence -->
+                        <TextView
+                            android:text="@string/convergence_label"
+                            android:layout_height="wrap_content"
+                            android:layout_width="0dp"
+                            android:layout_weight="25"
+                            android:gravity="end"
+
+
+                            android:layout_marginEnd="@dimen/row_between_fields_margin"
+                            android:textColor="@color/colorTextBlack"
+                            android:background="@color/colorScreenBackground"
+                            />
+                        <!-- Decimal Degrees -->
+                        <EditText
+                            android:id="@+id/gpsWgs84ConvergenceInput"
+                            android:hint="@string/convergence_label"
+
+                            android:layout_height="wrap_content"
+                            android:layout_width="0dp"
+                            android:layout_weight="65"
+                            android:gravity="center"
+
+                            android:inputType="numberSigned|numberDecimal"
+                            android:enabled="false"
+
+                            android:layout_marginEnd="@dimen/row_between_fields_margin"
+
+                            android:textColor="@color/colorTextBlack"
+                            android:background="@color/colorGrayish"
+                            />
+                        <!-- degrees -->
+                        <EditText
+                            android:id="@+id/gpsWgs84ConvDegreesInput"
+                            android:hint="@string/type_degrees_label"
+                            android:layout_height="wrap_content"
+                            android:layout_width="0dp"
+                            android:layout_weight="15"
+                            android:gravity="center"
+
+                            android:inputType="numberSigned|number"
+                            android:enabled="false"
+
+
+                            android:layout_marginEnd="@dimen/row_between_fields_margin"
+
+                            android:textColor="@color/colorTextBlack"
+                            android:background="@color/colorWhite"
+                            />
+                        <!-- minutes -->
+                        <EditText
+                            android:id="@+id/gpsWgs84ConvMinutesInput"
+                            android:hint="@string/type_minutes_label"
+
+                            android:layout_height="wrap_content"
+                            android:layout_width="0dp"
+                            android:layout_weight="15"
+                            android:gravity="center"
+
+                            android:inputType="numberSigned|number"
+                            android:enabled="false"
+
+                            android:layout_marginEnd="@dimen/row_between_fields_margin"
+
+                            android:textColor="@color/colorTextBlack"
+                            android:background="@color/colorWhite"
+                            />
+                        <!-- seconds -->
+                        <EditText
+                            android:id="@+id/gpsWgs84ConvSecondsInput"
+                            android:hint="@string/type_seconds_label"
+
+                            android:layout_height="wrap_content"
+                            android:layout_width="0dp"
+                            android:layout_weight="35"
+                            android:gravity="center"
+
+                            android:inputType="numberSigned|numberDecimal"
+                            android:enabled="false"
+
+                            android:layout_marginEnd="@dimen/row_cap_margin"
+
+                            android:textColor="@color/colorTextBlack"
+                            android:background="@color/colorWhite"
+                            />
+
+                    </LinearLayout>
+
+                    <!-- Scale Factor -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:paddingTop="@dimen/row_between_rows_margin"
+                        >
+
+                        <!-- Scale Factor -->
+                        <TextView
+                            android:text="@string/scale_factor_label"
+                            android:layout_height="wrap_content"
+                            android:layout_width="0dp"
+                            android:layout_weight="25"
+                            android:gravity="end"
+
+                            android:layout_marginEnd="@dimen/row_between_fields_margin"
+
+                            android:textColor="@color/colorTextBlack"
+                            android:background="@color/colorScreenBackground"
+                            />
+                        <EditText
+                            android:id="@+id/gpsWgs84ScaleFactor"
+                            android:hint="@string/scale_factor_label"
+
+                            android:layout_height="wrap_content"
+                            android:layout_width="0dp"
+                            android:layout_weight="125"
+                            android:gravity="center"
+
+                            android:layout_marginEnd="@dimen/row_cap_margin"
+                            android:inputType="numberSigned|numberDecimal"
+
+                            android:textColor="@color/colorTextBlack"
+                            android:background="@color/colorWhite"
+                            />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <!-- Elevation/Geoid input fields -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingTop="@dimen/row_between_rows_margin"
+
+                    >
+                    <!-- Elevation  -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="@dimen/row_between_rows_margin"
+
+                        >
+                        <!-- Elevation  -->
+                        <TextView
+                            android:text="@string/elevation_label"
+                            android:layout_height="wrap_content"
+                            android:layout_width="0dp"
+                            android:layout_weight="15"
+
+                            android:gravity="end"
+
+                            android:layout_marginStart="@dimen/row_cap_margin"
+
+                            android:textColor="@color/colorTextBlack"
+                            android:background="@color/colorScreenBackground"
+                            />
+                        <EditText
+                            android:id="@+id/gpsWgs84ElevationMetersInput"
+                            android:hint="@string/type_elevation_label"
+                            android:layout_gravity="center_horizontal"
+                            android:gravity="center"
+                            android:layout_height="wrap_content"
+                            android:layout_width="0dp"
+                            android:layout_weight="70"
+
+                            android:inputType="numberSigned|numberDecimal"
+                            android:enabled="false"
+
+                            android:layout_marginEnd="@dimen/row_cap_margin"
+
+                            android:textColor="@color/colorTextBlack"
+                            android:background="@color/colorGrayish"
+                            />
+
+                    </LinearLayout>
+
+                    <!-- Geoid Height  -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+
+                        >
+
+                        <!-- Geoid Height  -->
+                        <TextView
+                            android:text="@string/geoid_height_label"
+                            android:layout_height="wrap_content"
+                            android:layout_width="0dp"
+                            android:layout_weight="17"
+
+                            android:gravity="end"
+
+                            android:layout_marginStart="@dimen/row_cap_margin"
+
+                            android:textColor="@color/colorTextBlack"
+                            android:background="@color/colorScreenBackground"
+                            />
+                        <EditText
+                            android:id="@+id/gpsWgs84GeoidHeightMetersInput"
+                            android:hint="@string/type_geoid_height_label"
+                            android:layout_gravity="center_horizontal"
+                            android:gravity="center"
+                            android:layout_height="wrap_content"
+                            android:layout_width="0dp"
+                            android:layout_weight="70"
+
+                            android:inputType="numberSigned|numberDecimal"
+                            android:enabled="false"
+
+                            android:layout_marginEnd="@dimen/row_cap_margin"
+
+                            android:textColor="@color/colorTextBlack"
+                            android:background="@color/colorGrayish"
+                            />
+
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- DOP values -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingTop="@dimen/row_between_rows_margin"
+
+                    >
+                    <!-- HDOP  -->
+                    <TextView
+                        android:text="@string/hdop_label"
+                        android:layout_height="wrap_content"
+                        android:layout_width="0dp"
+                        android:layout_weight="15"
+
+                        android:gravity="end"
+
+                        android:layout_marginStart="@dimen/row_cap_margin"
+
+                        android:textColor="@color/colorTextBlack"
+                        android:background="@color/colorScreenBackground"
+                        />
+                    <EditText
+                        android:id="@+id/hdopOutput"
+                        android:hint="@string/hdop_label"
+                        android:layout_gravity="center_horizontal"
+                        android:gravity="center"
+                        android:layout_height="wrap_content"
+                        android:layout_width="0dp"
+                        android:layout_weight="25"
+
+                        android:inputType="numberDecimal"
+                        android:enabled="false"
+
+                        android:layout_marginEnd="@dimen/row_between_fields_margin"
+
+                        android:textColor="@color/colorTextBlack"
+                        android:background="@color/colorGrayish"
+                        />
+
+                    <!-- VDOP  -->
+                    <TextView
+                        android:text="@string/vdop_label"
+                        android:layout_height="wrap_content"
+                        android:layout_width="0dp"
+                        android:layout_weight="15"
+
+                        android:gravity="end"
+
+                        android:layout_marginStart="@dimen/row_cap_margin"
+
+                        android:textColor="@color/colorTextBlack"
+                        android:background="@color/colorScreenBackground"
+                        />
+                    <EditText
+                        android:id="@+id/vdopOutput"
+                        android:hint="@string/vdop_label"
+                        android:layout_gravity="center_horizontal"
+                        android:gravity="center"
+                        android:layout_height="wrap_content"
+                        android:layout_width="0dp"
+                        android:layout_weight="25"
+
+                        android:inputType="numberDecimal"
+                        android:enabled="false"
+
+                        android:layout_marginEnd="@dimen/row_between_fields_margin"
+
+                        android:textColor="@color/colorTextBlack"
+                        android:background="@color/colorGrayish"
+                        />
+
+                    <!-- PDOP  -->
+                    <TextView
+                        android:text="@string/pdop_label"
+                        android:layout_height="wrap_content"
+                        android:layout_width="0dp"
+                        android:layout_weight="15"
+
+                        android:gravity="end"
+
+                        android:layout_marginStart="@dimen/row_cap_margin"
+
+                        android:textColor="@color/colorTextBlack"
+                        android:background="@color/colorScreenBackground"
+                        />
+                    <EditText
+                        android:id="@+id/pdopOutput"
+                        android:hint="@string/pdop_label"
+                        android:layout_gravity="center_horizontal"
+                        android:gravity="center"
+                        android:layout_height="wrap_content"
+                        android:layout_width="0dp"
+                        android:layout_weight="25"
+
+                        android:inputType="numberDecimal"
+                        android:enabled="false"
+
+                        android:layout_marginEnd="@dimen/row_cap_margin"
+
+                        android:textColor="@color/colorTextBlack"
+                        android:background="@color/colorGrayish"
+                        />
+
+
+                </LinearLayout>
+
+
+            </LinearLayout>
+
+            <!--                            -->
+            <!-- Mean'ed WGS84 lat/long     -->
+            <!--                            -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+
+                android:paddingTop="10dp"
+                >
+
+                <!-- Mean GPS Location Prompt -->
+                <TextView
+                    android:text="@string/mean_wgs84_prompt"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:gravity="end"
+
+                    android:paddingBottom="@dimen/row_between_rows_margin"
+
+                    android:textColor="@color/colorTextBlack"
+                    android:background="@color/colorRedish"
+                    />
+
+                <!-- Start Timestamp / End Timestamp of the mean -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="@dimen/row_between_rows_margin"
+
+                    >
+                    <!-- Start time of mean -->
+                    <TextView
+                        android:text="@string/mean_start_timestamp_label"
+                        android:layout_height="wrap_content"
+                        android:layout_width="0dp"
+                        android:layout_weight="15"
+                        android:gravity="end"
+
+                        android:textColor="@color/colorTextBlack"
+                        android:background="@color/colorScreenBackground"
+                        />
+                    <TextView
+                        android:id="@+id/meanWgs84StartTimestampOutput"
+                        android:hint="@string/mean_start_timestamp_label"
+                        android:layout_height="wrap_content"
+                        android:layout_width="0dp"
+                        android:layout_weight="35"
+                        android:gravity="center"
+
+                        android:textColor="@color/colorTextBlack"
+                        android:background="@color/colorWhite"
+                        />
+                    <!-- End time of mean -->
+                    <TextView
+                        android:text="@string/mean_end_timestamp_label"
+
+                        android:layout_height="wrap_content"
+                        android:layout_width="0dp"
+                        android:layout_weight="15"
+                        android:gravity="end"
+
+                        android:textColor="@color/colorTextBlack"
+                        android:background="@color/colorScreenBackground"
+                        />
+                    <TextView
+                        android:id="@+id/meanWgs84EndTimestampOutput"
+                        android:hint="@string/mean_end_timestamp_label"
+
+                        android:layout_height="wrap_content"
+                        android:layout_width="0dp"
+                        android:layout_weight="35"
+                        android:gravity="center"
+
+                        android:layout_marginEnd="6dp"
+
+                        android:textColor="@color/colorTextBlack"
+                        android:background="@color/colorWhite"
+                        />
+
+                </LinearLayout>
+
+                <!-- Standard Deviations -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="@dimen/row_between_rows_margin"
+
+                    >
+
+                    <!-- Number of points in the mean -->
+                    <TextView
+                        android:text="@string/mean_number_of_points_label"
+                        android:layout_height="wrap_content"
+                        android:layout_width="0dp"
+                        android:layout_weight="15"
+                        android:gravity="end"
+
+                        android:textColor="@color/colorTextBlack"
+                        android:background="@color/colorScreenBackground"
+                        />
+                    <TextView
+                        android:id="@+id/meanWgs84PointsInMeanOutput"
+                        android:hint="@string/mean_number_of_points_label"
+                        android:layout_height="wrap_content"
+                        android:layout_width="0dp"
+                        android:layout_weight="35"
+                        android:gravity="center"
+
+
+
+                        android:textColor="@color/colorTextBlack"
+                        android:background="@color/colorWhite"
+                        />
+                    <!-- Elevation Sigma -->
+                    <TextView
+                        android:id="@+id/meanWgs84ElevSigmaLabel"
+                        android:text="@string/mean_elev_sigma"
+                        android:layout_height="wrap_content"
+                        android:layout_width="0dp"
+                        android:layout_weight="15"
+                        android:gravity="end"
+
+                        android:textColor="@color/colorTextBlack"
+                        android:background="@color/colorScreenBackground"
+                        />
+                    <TextView
+                        android:id="@+id/meanWgs84ElevSigmaOutput"
+                        android:hint="@string/mean_elev_sigma"
+                        android:layout_height="wrap_content"
+                        android:layout_width="0dp"
+                        android:layout_weight="35"
+                        android:gravity="center"
+
+                        android:layout_marginEnd="@dimen/row_cap_margin"
+
+                        android:textColor="@color/colorTextBlack"
+                        android:background="@color/colorWhite"
+                        />
+
+                </LinearLayout>
+
+                <!-- Lat / Long Standard Deviations -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="@dimen/row_between_rows_margin"
+
+                    >
+                    <!-- Lat Sigma -->
+                    <TextView
+                        android:id="@+id/meanWgs84LatSigmaLabel"
+                        android:text="@string/mean_lat_sigma"
+                        android:layout_height="wrap_content"
+                        android:layout_width="0dp"
+                        android:layout_weight="15"
+                        android:gravity="end"
+
+                        android:textColor="@color/colorTextBlack"
+                        android:background="@color/colorScreenBackground"
+                        />
+                    <TextView
+                        android:id="@+id/meanWgs84LatSigmaOutput"
+                        android:hint="@string/mean_lat_sigma"
+                        android:layout_height="wrap_content"
+                        android:layout_width="0dp"
+                        android:layout_weight="35"
+                        android:gravity="center"
+
+                        android:textColor="@color/colorTextBlack"
+                        android:background="@color/colorWhite"
+                        />
+                    <!-- Long Sigma -->
+                    <TextView
+                        android:id="@+id/meanWgs84LngSigmaLabel"
+                        android:text="@string/mean_lng_sigma"
+
+                        android:layout_height="wrap_content"
+                        android:layout_width="0dp"
+                        android:layout_weight="15"
+                        android:gravity="end"
+
+                        android:textColor="@color/colorTextBlack"
+                        android:background="@color/colorScreenBackground"
+                        />
+                    <TextView
+                        android:id="@+id/meanWgs84LngSigmaOutput"
+                        android:hint="@string/mean_lng_sigma"
+
+                        android:layout_height="wrap_content"
+                        android:layout_width="0dp"
+                        android:layout_weight="35"
+                        android:gravity="center"
+
+                        android:layout_marginEnd="@dimen/row_cap_margin"
+
+                        android:textColor="@color/colorTextBlack"
+                        android:background="@color/colorWhite"
+                        />
+
+
+                </LinearLayout>
+
+                <!-- Latitude Label and input fields -->
+                <!-- break out into separate fields -->
+                <!-- | decimal degrees | degrees | minutes | seconds | -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="@dimen/row_between_rows_margin"
+
+                    >
+                    <!-- Latitude Label -->
+                    <TextView
+                        android:id="@+id/meanWgs84LatitudeInputLabel"
+                        android:text="@string/latitude_label"
+                        android:layout_height="wrap_content"
+                        android:layout_width="0dp"
+                        android:layout_weight="15"
+                        android:gravity="end"
+
+                        android:layout_marginEnd="@dimen/row_cap_margin"
+                        android:textColor="@color/colorTextBlack"
+                        android:background="@color/colorScreenBackground"
+                        />
+                    <!-- Direction -->
+                    <EditText
+                        android:id="@+id/meanWgs84LatDirInput"
+                        android:hint="@string/type_lat_dir"
+
+                        android:layout_height="wrap_content"
+                        android:layout_width="0dp"
+                        android:layout_weight="5"
+                        android:gravity="center"
+
+                        android:inputType="textCapCharacters"
+                        android:enabled="false"
+
+                        android:layout_marginEnd="@dimen/row_between_fields_margin"
+
+                        android:textColor="@color/colorTextBlack"
+                        android:background="@color/colorGrayish"
+                        />
+                    <!-- Decimal Degrees -->
+                    <TextView
+                        android:id="@+id/meanWgs84LatitudeInput"
+                        android:hint="@string/type_decimal_degrees_label"
+
+                        android:layout_height="wrap_content"
+                        android:layout_width="0dp"
+                        android:layout_weight="60"
+                        android:gravity="center"
+
+                        android:layout_marginEnd="@dimen/row_cap_margin"
+
+                        android:textColor="@color/colorTextBlack"
+                        android:background="@color/colorGrayish"
+                        />
+                    <!-- degrees -->
+                    <TextView
+                        android:id="@+id/meanWgs84LatDegreesInput"
+                        android:hint="@string/type_degrees_label"
+                        android:layout_height="wrap_content"
+                        android:layout_width="0dp"
+                        android:layout_weight="15"
+                        android:gravity="center"
+
+                        android:layout_marginEnd="@dimen/row_between_fields_margin"
+
+                        android:textColor="@color/colorTextBlack"
+                        android:background="@color/colorWhite"
+                        />
+                    <!-- minutes -->
+                    <TextView
+                        android:id="@+id/meanWgs84LatMinutesInput"
+                        android:hint="@string/type_minutes_label"
+
+                        android:layout_height="wrap_content"
+                        android:layout_width="0dp"
+                        android:layout_weight="15"
+                        android:gravity="center"
+
+                        android:layout_marginEnd="@dimen/row_between_fields_margin"
+
+                        android:textColor="@color/colorTextBlack"
+                        android:background="@color/colorWhite"
+                        />
+                    <!-- seconds -->
+                    <TextView
+                        android:id="@+id/meanWgs84LatSecondsInput"
+                        android:hint="@string/type_seconds_label"
+
+                        android:layout_height="wrap_content"
+                        android:layout_width="0dp"
+                        android:layout_weight="35"
+                        android:gravity="center"
+
+                        android:layout_marginEnd="@dimen/row_cap_margin"
+
+                        android:textColor="@color/colorTextBlack"
+                        android:background="@color/colorWhite"
+                        />
+
+                </LinearLayout>
+
+
+                <!-- Longitude Label and input fields -->
+                <!-- break out into separate fields -->
+                <!-- | decimal degrees | degrees | minutes | seconds  -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="@dimen/row_between_rows_margin"
+
+                    >
+                    <!-- Longitude Label -->
+                    <TextView
+                        android:id="@+id/meanWgs84LongitudeInputLabel"
+                        android:text="@string/longitude_label"
+                        android:layout_height="wrap_content"
+                        android:layout_width="0dp"
+                        android:layout_weight="15"
+
+                        android:gravity="end"
+
+                        android:layout_marginEnd="@dimen/row_cap_margin"
+                        android:textColor="@color/colorTextBlack"
+                        android:background="@color/colorScreenBackground"
+                        />
+                    <!-- Direction -->
+                    <EditText
+                        android:id="@+id/meanWgs84LngDirInput"
+                        android:hint="@string/type_lng_dir"
+
+                        android:layout_height="wrap_content"
+                        android:layout_width="0dp"
+                        android:layout_weight="5"
+                        android:gravity="center"
+
+                        android:inputType="textCapCharacters"
+                        android:enabled="false"
+
+                        android:layout_marginEnd="@dimen/row_between_fields_margin"
+
+                        android:textColor="@color/colorTextBlack"
+                        android:background="@color/colorGrayish"
+                        />
+                    <!-- Decimal Degrees -->
+                    <TextView
+                        android:id="@+id/meanWgs84LongitudeInput"
+                        android:hint="@string/type_decimal_degrees_label"
+
+                        android:layout_height="wrap_content"
+                        android:layout_width="0dp"
+                        android:layout_weight="60"
+                        android:gravity="center"
+
+                        android:layout_marginEnd="@dimen/row_cap_margin"
+
+                        android:textColor="@color/colorTextBlack"
+                        android:background="@color/colorGrayish"
+                        />
+                    <!-- degrees -->
+                    <TextView
+                        android:id="@+id/meanWgs84LongDegreesInput"
+                        android:hint="@string/type_degrees_label"
+                        android:layout_height="wrap_content"
+                        android:layout_width="0dp"
+                        android:layout_weight="15"
+                        android:gravity="center"
+
+                        android:layout_marginEnd="@dimen/row_between_fields_margin"
+
+                        android:textColor="@color/colorTextBlack"
+                        android:background="@color/colorWhite"
+                        />
+                    <!-- minutes -->
+                    <TextView
+                        android:id="@+id/meanWgs84LongMinutesInput"
+                        android:hint="@string/type_minutes_label"
+
+                        android:layout_height="wrap_content"
+                        android:layout_width="0dp"
+                        android:layout_weight="15"
+                        android:gravity="center"
+
+                        android:layout_marginEnd="@dimen/row_between_fields_margin"
+
+                        android:textColor="@color/colorTextBlack"
+                        android:background="@color/colorWhite"
+                        />
+                    <!-- seconds -->
+                    <TextView
+                        android:id="@+id/meanWgs84LongSecondsInput"
+                        android:hint="@string/type_seconds_label"
+
+                        android:layout_height="wrap_content"
+                        android:layout_width="0dp"
+                        android:layout_weight="35"
+                        android:gravity="center"
+
+                        android:layout_marginEnd="@dimen/row_cap_margin"
+
+
+                        android:textColor="@color/colorTextBlack"
+                        android:background="@color/colorWhite"
+                        />
+
+                </LinearLayout>
+
+                <!-- Elevation/Geoid input fields -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+
+                    >
+                    <!-- Elevation  -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="@dimen/row_between_rows_margin"
+
+                        >
+                        <!-- Elevation  -->
+                        <TextView
+                            android:text="@string/elevation_label"
+                            android:layout_height="wrap_content"
+                            android:layout_width="0dp"
+                            android:layout_weight="15"
+
+                            android:gravity="end"
+
+                            android:layout_marginEnd="@dimen/row_cap_margin"
+                            android:textColor="@color/colorTextBlack"
+                            android:background="@color/colorScreenBackground"
+                            />
+                        <TextView
+                            android:id="@+id/meanWgs84ElevationMetersInput"
+                            android:hint="@string/type_elevation_label"
+                            android:layout_gravity="center_horizontal"
+                            android:gravity="center"
+                            android:layout_height="wrap_content"
+                            android:layout_width="0dp"
+                            android:layout_weight="70"
+
+                            android:layout_marginEnd="@dimen/row_cap_margin"
+
+                            android:textColor="@color/colorTextBlack"
+                            android:background="@color/colorGrayish"
+                            />
+
+                    </LinearLayout>
+
+                    <!-- Geoid Height  -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+
+                        >
+
+                        <!-- Geoid Height  -->
+                        <TextView
+                            android:text="@string/geoid_height_label"
+                            android:layout_height="wrap_content"
+                            android:layout_width="0dp"
+                            android:layout_weight="17"
+
+                            android:gravity="end"
+
+                            android:layout_marginEnd="@dimen/row_cap_margin"
+                            android:textColor="@color/colorTextBlack"
+                            android:background="@color/colorScreenBackground"
+                            />
+                        <TextView
+                            android:id="@+id/meanWgs84GeoidHeightMetersInput"
+                            android:hint="@string/type_geoid_height_label"
+                            android:layout_gravity="center_horizontal"
+                            android:gravity="center"
+                            android:layout_height="wrap_content"
+                            android:layout_width="0dp"
+                            android:layout_weight="70"
+
+                            android:layout_marginEnd="@dimen/row_cap_margin"
+
+                            android:textColor="@color/colorTextBlack"
+                            android:background="@color/colorGrayish"
+                            />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!--                            -->
+            <!-- State Plane Coordinates    -->
+            <!--                            -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+
+                android:paddingTop="10dp"
+                >
+
+                <!-- SPC Prompt -->
+                <TextView
+                    android:text="@string/spc_prompt"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:gravity="center"
+
+                    android:paddingBottom="@dimen/row_between_rows_margin"
+
+                    android:textColor="@color/colorTextBlack"
+                    android:background="@color/colorGreenish"
+                    />
+
+                <!-- break out the fields individually -->
+                <!-- Zone Hemisphere Latband -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+
+                    >
+                    <!-- label -->
+                    <TextView
+                        android:text="@string/spc_label"
+                        android:layout_height="wrap_content"
+                        android:layout_width="0dp"
+                        android:layout_weight="30"
+                        android:gravity="end"
+
+                        android:layout_marginEnd="@dimen/row_between_fields_margin"
+
+                        android:textColor="@color/colorTextBlack"
+                        android:background="@color/colorScreenBackground"
+                        />
+                    <!-- zone -->
+                    <TextView
+                        android:id="@+id/spcZoneOutput"
+                        android:hint="@string/spc_zone_label"
+                        android:layout_height="wrap_content"
+                        android:layout_width="0dp"
+                        android:layout_weight="70"
+
+                        android:layout_marginEnd="@dimen/row_between_fields_margin"
+
+
+                        android:gravity="center"
+
+                        android:textColor="@color/colorTextBlack"
+                        android:background="@color/colorWhite"
+                        />
+
+                    <!-- State -->
+                    <TextView
+                        android:id="@+id/spcStateOutput"
+                        android:hint="@string/spc_state_label"
+
+                        android:layout_height="wrap_content"
+                        android:layout_width="0dp"
+                        android:layout_weight="75"
+
+                        android:layout_marginEnd="@dimen/row_cap_margin"
+
+                        android:inputType="text"
+                        android:gravity="center"
+
+                        android:textColor="@color/colorTextBlack"
+                        android:background="@color/colorWhite"
+                        />
+
+                </LinearLayout>
+
+                <!-- Northing  -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="@dimen/row_between_rows_margin"
+                    >
+
+                    <!-- Northing -->
+                    <TextView
+                        android:id="@+id/spcNorthingInputLabel"
+                        android:text="@string/spc_northing_label"
+                        android:layout_height="wrap_content"
+                        android:layout_width="0dp"
+                        android:layout_weight="30"
+                        android:gravity="end"
+
+                        android:layout_marginEnd="@dimen/row_between_fields_margin"
+
+                        android:textColor="@color/colorTextBlack"
+                        android:background="@color/colorScreenBackground"
+                        />
+                    <!-- Northing Meters -->
+                    <EditText
+                        android:id="@+id/spcNorthingMetersOutput"
+                        android:hint="@string/spc_northing_label"
+
+                        android:layout_height="wrap_content"
+                        android:layout_width="0dp"
+                        android:layout_weight="70"
+
+                        android:gravity="center"
+
+                        android:layout_marginEnd="@dimen/row_between_fields_margin"
+                        android:inputType="numberSigned|numberDecimal"
+
+                        android:textColor="@color/colorTextBlack"
+                        android:background="@color/colorGrayish"
+                        />
+
+                </LinearLayout>
+
+                <!-- Easting  -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="@dimen/row_between_rows_margin"
+                    >
+
+                    <!-- Easting -->
+                    <TextView
+                        android:id="@+id/spcEasingInputLabel"
+                        android:text="@string/spc_easting_label"
+                        android:layout_height="wrap_content"
+                        android:layout_width="0dp"
+                        android:layout_weight="30"
+                        android:gravity="end"
+
+                        android:layout_marginEnd="@dimen/row_between_fields_margin"
+                        android:textColor="@color/colorTextBlack"
+                        android:background="@color/colorScreenBackground"
+                        />
+                    <!-- Easting Meters -->
+                    <EditText
+                        android:id="@+id/spcEastingMetersOutput"
+                        android:hint="@string/spc_easting_label"
+                        android:layout_height="wrap_content"
+                        android:layout_width="0dp"
+                        android:layout_weight="70"
+
+                        android:gravity="center"
+
+                        android:layout_marginEnd="@dimen/row_between_fields_margin"
+                        android:inputType="numberSigned|numberDecimal"
+
+                        android:textColor="@color/colorTextBlack"
+                        android:background="@color/colorGrayish"
+                        />
+
+
+                </LinearLayout>
+
+                <!-- Convergence / Scale Factor -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginTop="@dimen/row_between_rows_margin"
+                    >
+
+                    <!-- Convergence / Scale Factor -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+
+                        >
+
+                        <!-- Convergence -->
+                        <TextView
+                            android:text="@string/convergence_label"
+                            android:layout_height="wrap_content"
+                            android:layout_width="0dp"
+                            android:layout_weight="25"
+                            android:gravity="end"
+
+
+                            android:layout_marginEnd="@dimen/row_between_fields_margin"
+                            android:textColor="@color/colorTextBlack"
+                            android:background="@color/colorScreenBackground"
+                            />
+                        <!-- Decimal Degrees -->
+                        <EditText
+                            android:id="@+id/spcConvergenceInput"
+                            android:hint="@string/convergence_label"
+
+                            android:layout_height="wrap_content"
+                            android:layout_width="0dp"
+                            android:layout_weight="65"
+                            android:gravity="center"
+
+                            android:inputType="numberSigned|numberDecimal"
+                            android:enabled="false"
+
+                            android:layout_marginEnd="@dimen/row_between_fields_margin"
+
+                            android:textColor="@color/colorTextBlack"
+                            android:background="@color/colorGrayish"
+                            />
+                        <!-- degrees -->
+                        <EditText
+                            android:id="@+id/spcConvDegreesInput"
+                            android:hint="@string/type_degrees_label"
+                            android:layout_height="wrap_content"
+                            android:layout_width="0dp"
+                            android:layout_weight="15"
+                            android:gravity="center"
+
+                            android:inputType="numberSigned|number"
+                            android:enabled="false"
+
+
+                            android:layout_marginEnd="@dimen/row_between_fields_margin"
+
+                            android:textColor="@color/colorTextBlack"
+                            android:background="@color/colorWhite"
+                            />
+                        <!-- minutes -->
+                        <EditText
+                            android:id="@+id/spcConvMinutesInput"
+                            android:hint="@string/type_minutes_label"
+
+                            android:layout_height="wrap_content"
+                            android:layout_width="0dp"
+                            android:layout_weight="15"
+                            android:gravity="center"
+
+                            android:inputType="numberSigned|number"
+                            android:enabled="false"
+
+                            android:layout_marginEnd="@dimen/row_between_fields_margin"
+
+                            android:textColor="@color/colorTextBlack"
+                            android:background="@color/colorWhite"
+                            />
+                        <!-- seconds -->
+                        <EditText
+                            android:id="@+id/spcConvSecondsInput"
+                            android:hint="@string/type_seconds_label"
+
+                            android:layout_height="wrap_content"
+                            android:layout_width="0dp"
+                            android:layout_weight="35"
+                            android:gravity="center"
+
+                            android:inputType="numberSigned|numberDecimal"
+                            android:enabled="false"
+
+                            android:layout_marginEnd="@dimen/row_cap_margin"
+
+                            android:textColor="@color/colorTextBlack"
+                            android:background="@color/colorWhite"
+                            />
+
+                    </LinearLayout>
+
+                    <!-- Scale Factor -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:paddingTop="@dimen/row_between_rows_margin"
+                        >
+
+                        <!-- Scale Factor -->
+                        <TextView
+                            android:text="@string/scale_factor_label"
+                            android:layout_height="wrap_content"
+                            android:layout_width="0dp"
+                            android:layout_weight="25"
+                            android:gravity="end"
+
+                            android:layout_marginEnd="@dimen/row_between_fields_margin"
+
+                            android:textColor="@color/colorTextBlack"
+                            android:background="@color/colorScreenBackground"
+                            />
+                        <EditText
+                            android:id="@+id/spcScaleFactor"
+                            android:hint="@string/scale_factor_label"
+
+                            android:layout_height="wrap_content"
+                            android:layout_width="0dp"
+                            android:layout_weight="125"
+                            android:gravity="center"
+
+                            android:layout_marginEnd="@dimen/row_cap_margin"
+                            android:inputType="numberSigned|numberDecimal"
+
+                            android:textColor="@color/colorTextBlack"
+                            android:background="@color/colorWhite"
+                            />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- Elevation/Geoid input fields -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingTop="@dimen/row_between_rows_margin"
+
+                    >
+                    <!-- Elevation  -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="@dimen/row_between_rows_margin"
+
+                        >
+                        <!-- Elevation  -->
+                        <TextView
+                            android:text="@string/elevation_label"
+                            android:layout_height="wrap_content"
+                            android:layout_width="0dp"
+                            android:layout_weight="15"
+
+                            android:gravity="end"
+
+                            android:layout_marginStart="@dimen/row_cap_margin"
+
+                            android:textColor="@color/colorTextBlack"
+                            android:background="@color/colorScreenBackground"
+                            />
+                        <EditText
+                            android:id="@+id/spcsElevationMetersInput"
+                            android:hint="@string/type_elevation_label"
+                            android:layout_gravity="center_horizontal"
+                            android:gravity="center"
+                            android:layout_height="wrap_content"
+                            android:layout_width="0dp"
+                            android:layout_weight="70"
+
+                            android:inputType="numberSigned|numberDecimal"
+                            android:enabled="false"
+
+                            android:layout_marginEnd="@dimen/row_cap_margin"
+
+                            android:textColor="@color/colorTextBlack"
+                            android:background="@color/colorGrayish"
+                            />
+
+                    </LinearLayout>
+
+                    <!-- Geoid Height  -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        >
+
+                        <!-- Geoid Height  -->
+                        <TextView
+                            android:text="@string/geoid_height_label"
+                            android:layout_height="wrap_content"
+                            android:layout_width="0dp"
+                            android:layout_weight="17"
+
+                            android:gravity="end"
+
+                            android:layout_marginStart="@dimen/row_cap_margin"
+
+                            android:textColor="@color/colorTextBlack"
+                            android:background="@color/colorScreenBackground"
+                            />
+                        <EditText
+                            android:id="@+id/spcsGeoidHeightMetersInput"
+                            android:hint="@string/type_geoid_height_label"
+                            android:layout_gravity="center_horizontal"
+                            android:gravity="center"
+                            android:layout_height="wrap_content"
+                            android:layout_width="0dp"
+                            android:layout_weight="70"
+
+                            android:inputType="numberSigned|numberDecimal"
+                            android:enabled="false"
+
+                            android:layout_marginEnd="@dimen/row_cap_margin"
+
+                            android:textColor="@color/colorTextBlack"
+                            android:background="@color/colorGrayish"
+                            />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!--                            -->
+            <!-- UTM                        -->
+            <!--                            -->
+            <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+
+            android:paddingTop="10dp"
+            >
+
+                <!-- UTM Rewritten from scratch  -->
+                <!-- UTM Prompt -->
+                <TextView
+                    android:text="@string/utm_prompt"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:gravity="center"
+
+                    android:paddingBottom="@dimen/row_between_rows_margin"
+
+                    android:textColor="@color/colorTextBlack"
+                    android:background="@color/colorBlueish"
+                    />
+
+                <!-- break out the fields individually -->
+                <!-- Zone Hemisphere Latband -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="@dimen/row_between_rows_margin"
+
+                    >
+                    <!-- label -->
+                    <TextView
+                        android:text="@string/utm_coord_label"
+                        android:layout_height="wrap_content"
+                        android:layout_width="0dp"
+                        android:layout_weight="30"
+                        android:gravity="end"
+
+                        android:textColor="@color/colorTextBlack"
+                        android:background="@color/colorScreenBackground"
+                        />
+                    <!-- zone -->
+                    <EditText
+                        android:id="@+id/utmZoneOutput"
+                        android:hint="@string/utm_zone_label"
+                        android:layout_height="wrap_content"
+                        android:layout_width="0dp"
+                        android:layout_weight="50"
+
+                        android:layout_marginEnd="@dimen/row_between_fields_margin"
+                        android:inputType="number"
+
+                        android:gravity="center"
+
+                        android:textColor="@color/colorTextBlack"
+                        android:background="@color/colorWhite"
+                        />
+                    <!-- hemisphere -->
+                    <EditText
+                        android:id="@+id/utmHemisphereOutput"
+                        android:hint="@string/utm_hemisphere_label"
+
+                        android:layout_height="wrap_content"
+                        android:layout_width="0dp"
+                        android:layout_weight="45"
+
+                        android:layout_marginEnd="@dimen/row_between_fields_margin"
+                        android:inputType="text"
+
+                        android:gravity="center"
+
+                        android:textColor="@color/colorTextBlack"
+                        android:background="@color/colorWhite"
+                        />
+                    <!-- LatBand -->
+                    <EditText
+                        android:id="@+id/utmLatbandOutput"
+                        android:hint="@string/utm_latband_label"
+
+                        android:layout_height="wrap_content"
+                        android:layout_width="0dp"
+                        android:layout_weight="45"
+
+                        android:layout_marginEnd="@dimen/row_cap_margin"
+                        android:inputType="text"
+
+                        android:gravity="center"
+
+                        android:textColor="@color/colorTextBlack"
+                        android:background="@color/colorWhite"
+                        />
+
+                </LinearLayout>
+
+                <!-- Northing -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="@dimen/row_between_rows_margin"
+                    >
+
+                    <!-- Northing -->
+                    <TextView
+                        android:id="@+id/utmNorthingInputLabel"
+                        android:text="@string/utm_northing_label"
+                        android:layout_height="wrap_content"
+                        android:layout_width="0dp"
+                        android:layout_weight="30"
+                        android:gravity="end"
+
+                        android:layout_marginEnd="@dimen/row_between_fields_margin"
+
+                        android:textColor="@color/colorTextBlack"
+                        android:background="@color/colorScreenBackground"
+                        />
+                    <!-- Northing Meters -->
+                    <EditText
+                        android:id="@+id/utmNorthingMetersOutput"
+                        android:hint="@string/utm_northing_label"
+
+                        android:layout_height="wrap_content"
+                        android:layout_width="0dp"
+                        android:layout_weight="70"
+
+                        android:gravity="center"
+
+                        android:layout_marginEnd="@dimen/row_between_fields_margin"
+                        android:inputType="numberSigned|numberDecimal"
+
+                        android:textColor="@color/colorTextBlack"
+                        android:background="@color/colorGrayish"
+                        />
+
+                </LinearLayout>
+
+                <!-- Easting  -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+
+                    >
+
+                    <!-- Easting -->
+                    <TextView
+                        android:id="@+id/utmEasingInputLabel"
+                        android:text="@string/utm_easting_label"
+                        android:layout_height="wrap_content"
+                        android:layout_width="0dp"
+                        android:layout_weight="30"
+                        android:gravity="end"
+
+                        android:layout_marginEnd="@dimen/row_between_fields_margin"
+
+                        android:textColor="@color/colorTextBlack"
+                        android:background="@color/colorScreenBackground"
+                        />
+                    <!-- Easting Meters -->
+                    <EditText
+                        android:id="@+id/utmEastingMetersOutput"
+                        android:hint="@string/utm_easting_label"
+                        android:layout_height="wrap_content"
+                        android:layout_width="0dp"
+                        android:layout_weight="70"
+
+                        android:gravity="center"
+
+                        android:layout_marginEnd="@dimen/row_between_fields_margin"
+                        android:inputType="numberSigned|numberDecimal"
+
+                        android:textColor="@color/colorTextBlack"
+                        android:background="@color/colorGrayish"
+                        />
+
+                </LinearLayout>
+
+                <!-- Convergence / Scale Factor -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginTop="@dimen/row_between_rows_margin"
+                    >
+
+                    <!-- Convergence / Scale Factor -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+
+                        >
+
+                        <!-- Convergence -->
+                        <TextView
+                            android:text="@string/convergence_label"
+                            android:layout_height="wrap_content"
+                            android:layout_width="0dp"
+                            android:layout_weight="25"
+                            android:gravity="end"
+
+
+                            android:layout_marginEnd="@dimen/row_between_fields_margin"
+                            android:textColor="@color/colorTextBlack"
+                            android:background="@color/colorScreenBackground"
+                            />
+                        <!-- Decimal Degrees -->
+                        <EditText
+                            android:id="@+id/utmConvergenceInput"
+                            android:hint="@string/convergence_label"
+
+                            android:layout_height="wrap_content"
+                            android:layout_width="0dp"
+                            android:layout_weight="65"
+                            android:gravity="center"
+
+                            android:inputType="numberSigned|numberDecimal"
+                            android:enabled="false"
+
+                            android:layout_marginEnd="@dimen/row_between_fields_margin"
+
+                            android:textColor="@color/colorTextBlack"
+                            android:background="@color/colorGrayish"
+                            />
+                        <!-- degrees -->
+                        <EditText
+                            android:id="@+id/utmConvDegreesInput"
+                            android:hint="@string/type_degrees_label"
+                            android:layout_height="wrap_content"
+                            android:layout_width="0dp"
+                            android:layout_weight="15"
+                            android:gravity="center"
+
+                            android:inputType="numberSigned|number"
+                            android:enabled="false"
+
+
+                            android:layout_marginEnd="@dimen/row_between_fields_margin"
+
+                            android:textColor="@color/colorTextBlack"
+                            android:background="@color/colorWhite"
+                            />
+                        <!-- minutes -->
+                        <EditText
+                            android:id="@+id/utmConvMinutesInput"
+                            android:hint="@string/type_minutes_label"
+
+                            android:layout_height="wrap_content"
+                            android:layout_width="0dp"
+                            android:layout_weight="15"
+                            android:gravity="center"
+
+                            android:inputType="numberSigned|number"
+                            android:enabled="false"
+
+                            android:layout_marginEnd="@dimen/row_between_fields_margin"
+
+                            android:textColor="@color/colorTextBlack"
+                            android:background="@color/colorWhite"
+                            />
+                        <!-- seconds -->
+                        <EditText
+                                android:id="@+id/utmConvSecondsInput"
+                                android:hint="@string/type_seconds_label"
+
+                                android:layout_height="wrap_content"
+                                android:layout_width="0dp"
+                                android:layout_weight="35"
+                                android:gravity="center"
+
+                                android:inputType="numberSigned|numberDecimal"
+                                android:enabled="false"
+
+                                android:layout_marginEnd="@dimen/row_cap_margin"
+
+                                android:textColor="@color/colorTextBlack"
+                                android:background="@color/colorWhite"
+                                />
+
+                    </LinearLayout>
+
+                    <!-- Scale Factor -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:paddingTop="@dimen/row_between_rows_margin"
+                        >
+
+                        <!-- Scale Factor -->
+                        <TextView
+                            android:text="@string/scale_factor_label"
+                            android:layout_height="wrap_content"
+                            android:layout_width="0dp"
+                            android:layout_weight="25"
+                            android:gravity="end"
+
+                            android:layout_marginEnd="@dimen/row_between_fields_margin"
+
+                            android:textColor="@color/colorTextBlack"
+                            android:background="@color/colorScreenBackground"
+                            />
+                        <EditText
+                            android:id="@+id/utmScaleFactor"
+                            android:hint="@string/scale_factor_label"
+
+                            android:layout_height="wrap_content"
+                            android:layout_width="0dp"
+                            android:layout_weight="125"
+                            android:gravity="center"
+
+                            android:layout_marginEnd="@dimen/row_cap_margin"
+                            android:inputType="numberSigned|numberDecimal"
+
+                            android:textColor="@color/colorTextBlack"
+                            android:background="@color/colorWhite"
+                            />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- Elevation/Geoid input fields -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingTop="@dimen/row_between_rows_margin"
+
+                    >
+                    <!-- Elevation  -->
+                    <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="@dimen/row_between_rows_margin"
+                    >
+                        <!-- Elevation  -->
+                        <TextView
+                            android:text="@string/elevation_label"
+                            android:layout_height="wrap_content"
+                            android:layout_width="0dp"
+                            android:layout_weight="15"
+
+                            android:gravity="end"
+
+                            android:layout_marginStart="@dimen/row_cap_margin"
+
+                            android:textColor="@color/colorTextBlack"
+                            android:background="@color/colorScreenBackground"
+                            />
+                        <EditText
+                            android:id="@+id/utmElevationMetersInput"
+                            android:hint="@string/type_elevation_label"
+                            android:layout_gravity="center_horizontal"
+                            android:gravity="center"
+                            android:layout_height="wrap_content"
+                            android:layout_width="0dp"
+                            android:layout_weight="70"
+
+                            android:inputType="numberSigned|numberDecimal"
+                            android:enabled="false"
+
+                            android:layout_marginEnd="@dimen/row_cap_margin"
+
+                            android:textColor="@color/colorTextBlack"
+                            android:background="@color/colorGrayish"
+                            />
+
+
+                    </LinearLayout>
+
+                    <!-- Geoid Height  -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        >
+
+                        <!-- Geoid Height  -->
+                        <TextView
+                            android:text="@string/geoid_height_label"
+                            android:layout_height="wrap_content"
+                            android:layout_width="0dp"
+                            android:layout_weight="17"
+
+                            android:gravity="end"
+
+                            android:layout_marginStart="@dimen/row_cap_margin"
+
+                            android:textColor="@color/colorTextBlack"
+                            android:background="@color/colorScreenBackground"
+                            />
+                        <EditText
+                            android:id="@+id/utmGeoidHeightMetersInput"
+                            android:hint="@string/type_geoid_height_label"
+                            android:layout_gravity="center_horizontal"
+                            android:gravity="center"
+                            android:layout_height="wrap_content"
+                            android:layout_width="0dp"
+                            android:layout_weight="70"
+
+                            android:inputType="numberSigned|numberDecimal"
+                            android:enabled="false"
+
+                            android:layout_marginEnd="@dimen/row_cap_margin"
+
+                            android:textColor="@color/colorTextBlack"
+                            android:background="@color/colorGrayish"
+                            />
+
+                    </LinearLayout>
+                </LinearLayout>
+
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</HorizontalScrollView>
+

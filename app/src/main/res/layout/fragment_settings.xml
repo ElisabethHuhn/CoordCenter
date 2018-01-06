@@ -1,0 +1,547 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context="com.androidchicken.coordcenter.MainActivity"
+
+    android:baselineAligned="false"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+
+    android:background="@color/colorScreenBackground"
+    android:orientation="vertical"
+    >
+
+    <!-- Container for entire screen, needed for scrolling -->
+    <LinearLayout
+        android:layout_width ="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|center_vertical"
+        android:orientation="vertical"
+
+        >
+
+        <!--  Switches -->
+
+        <!--  RMS v StdDev -->
+        <android.support.v7.widget.SwitchCompat
+            android:id="@+id/switchRmsVStdDev"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/terminology_label"
+            android:textOn="@string/rms_label"
+            android:textOff="@string/std_label"
+            app:showText="true"
+            android:checked="true"
+            />
+
+        <!--  Latitude / Longitude  -->
+        <android.support.v7.widget.SwitchCompat
+            android:id="@+id/switchLatLng"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/coord_ord_label"
+            android:textOn="@string/coord_ord_on_label"
+            android:textOff="@string/coord_ord_off_label"
+            app:showText="true"
+            android:checked="true"/>
+
+        <!--   Northing / Easting -->
+        <android.support.v7.widget.SwitchCompat
+            android:id="@+id/switchNeEn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/coord_ne_ord_label"
+            android:textOn="@string/coord_ne_ord_on_label"
+            android:textOff="@string/coord_ne_ord_off_label"
+            app:showText="true"
+            android:checked="true"/>
+
+        <!-- Location DD v DMS -->
+        <android.support.v7.widget.SwitchCompat
+            android:id="@+id/switchLocDDvDMS"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/dd_dms_label"
+            android:textOn="@string/dd_dms_on_label"
+            android:textOff="@string/dd_dms_off_label"
+            app:showText="true"
+            android:checked="true"/>
+
+        <!-- CA DD v DMS -->
+        <android.support.v7.widget.SwitchCompat
+            android:id="@+id/switchCADDvDMS"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/ca_label"
+            android:textOn="@string/dd_dms_on_label"
+            android:textOff="@string/dd_dms_off_label"
+            app:showText="true"
+            android:checked="true"/>
+
+        <!--  Hemisphere indicator  -->
+        <android.support.v7.widget.SwitchCompat
+            android:id="@+id/switchHemiDirVpm"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/hemisph_label"
+            android:textOn="@string/hemisph_on_label"
+            android:textOff="@string/hemisph_off_label"
+            app:showText="true"
+            android:checked="true" />
+
+
+        <!--  Spinners  -->
+
+        <!-- Row : Project Coordinate Type Spinner -->
+        <LinearLayout
+
+            android:layout_height="wrap_content"
+            android:layout_width ="match_parent"
+            android:layout_gravity="center_horizontal"
+            android:paddingTop="5dp"
+            >
+            <TextView
+                android:labelFor="@+id/coordinate_type_spinner"
+                android:text="@string/coordinate_type_label"
+                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="25"
+                android:gravity="end"
+
+                android:textColor="@color/colorTextBlack"
+                android:background="@color/colorScreenBackground"
+                />
+
+            <!--  Spinner to indicate the type of coordinate for the point -->
+            <Spinner
+                android:id            = "@+id/coordinate_type_spinner"
+                android:layout_width  = "0dp"
+                android:layout_height = "wrap_content"
+                android:layout_weight="75"
+                android:layout_marginEnd="@dimen/row_cap_margin"
+                android:textColor="@color/colorTextBlack"
+                android:background="@color/colorWhite"
+                />
+
+        </LinearLayout>
+
+        <!-- Row : Distance Units Spinner -->
+        <LinearLayout
+
+            android:layout_height="wrap_content"
+            android:layout_width ="match_parent"
+            android:layout_gravity="center_horizontal"
+            android:paddingTop="5dp"
+            >
+            <TextView
+                android:labelFor="@+id/distance_units_spinner"
+                android:text="@string/dist_units"
+                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="25"
+                android:gravity="end"
+
+                android:textColor="@color/colorTextBlack"
+                android:background="@color/colorScreenBackground"
+                />
+
+            <!--  Spinner to indicate the type of distance Units, Meters or Feet -->
+            <Spinner
+                android:id            = "@id/distance_units_spinner"
+                android:layout_width  = "0dp"
+                android:layout_height = "wrap_content"
+                android:layout_weight ="75"
+                android:gravity       ="center"
+                android:layout_marginEnd="@dimen/row_cap_margin"
+                android:textColor    ="@color/colorTextBlack"
+                android:background   ="@color/colorWhite"
+                />
+
+        </LinearLayout>
+
+        <!-- Row : Data Source Spinner -->
+        <LinearLayout
+
+            android:layout_height="wrap_content"
+            android:layout_width ="match_parent"
+            android:layout_gravity="center_horizontal"
+            android:paddingTop="5dp"
+            >
+            <TextView
+                android:labelFor="@+id/data_source_spinner"
+                android:text="@string/data_source"
+                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="25"
+                android:gravity="end"
+
+                android:textColor="@color/colorTextBlack"
+                android:background="@color/colorScreenBackground"
+                />
+
+            <!--  Spinner to indicate whether save is automatic on measure screen -->
+            <Spinner
+                android:id            = "@id/data_source_spinner"
+                android:layout_width  = "0dp"
+                android:layout_height = "wrap_content"
+                android:layout_weight ="75"
+                android:gravity       ="center"
+                android:layout_marginEnd="@dimen/row_cap_margin"
+                android:textColor    ="@color/colorTextBlack"
+                android:background   ="@color/colorWhite"
+                />
+
+        </LinearLayout>
+
+
+        <!--       Text Input        -->
+
+        <!-- Save Button -->
+        <Button
+            style="?android:attr/buttonBarButtonStyle"
+            android:id="@+id/settingSaveButton"
+            android:text="@string/save_precisions_label"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+
+            android:gravity="center|center_vertical"
+            android:layout_gravity="center"
+
+            android:layout_marginStart="@dimen/row_cap_margin"
+            android:layout_marginEnd="@dimen/row_between_fields_margin"
+
+            android:background="@color/colorGrayer"
+            android:textColor="@color/colorTextBlack"
+            />
+
+        <!-- Row :  SPCS Zone and State -->
+        <LinearLayout
+
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_gravity="center_horizontal"
+            android:paddingTop="5dp"
+            >
+
+            <TextView
+                android:labelFor="@+id/settingsSpcZoneInput"
+                android:text="@string/spc_zone_label"
+                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="25"
+                android:gravity="end"
+
+                android:textColor="@color/colorTextBlack"
+                android:background="@color/colorScreenBackground"
+                />
+            <EditText
+                android:id="@id/settingsSpcZoneInput"
+
+                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="25"
+                android:gravity="center"
+
+                android:inputType="number"
+
+                android:layout_marginEnd="@dimen/row_between_fields_margin"
+
+                android:textColor="@color/colorTextBlack"
+                android:enabled="true"
+                android:background="@color/colorWhite"
+                />
+
+            <TextView
+                android:labelFor="@+id/settingsSpcStateOutput"
+                android:text="@string/spc_state_label"
+                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="15"
+                android:gravity="end"
+
+                android:textColor="@color/colorTextBlack"
+                android:background="@color/colorScreenBackground"
+                />
+            <TextView
+                android:id="@id/settingsSpcStateOutput"
+
+                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="35"
+                android:gravity="center"
+
+
+
+                android:layout_marginEnd="@dimen/row_cap_margin"
+
+                android:textColor="@color/colorTextBlack"
+                android:enabled="false"
+                android:background="@color/colorGray"
+                />
+
+        </LinearLayout>
+
+        <!-- Row : Height  -->
+        <LinearLayout
+
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_gravity="center_horizontal"
+            android:paddingTop="5dp"
+            >
+            <TextView
+                android:labelFor="@+id/settingsHeightOutput"
+                android:text="@string/settings_height_label"
+                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="25"
+                android:gravity="end"
+
+                android:textColor="@color/colorTextBlack"
+                android:background="@color/colorScreenBackground"
+                />
+            <EditText
+                android:id="@id/settingsHeightOutput"
+
+                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="75"
+                android:gravity="center"
+
+                android:inputType="numberDecimal|numberSigned"
+
+                android:layout_marginEnd="@dimen/row_cap_margin"
+
+                android:textColor="@color/colorTextBlack"
+                android:enabled="false"
+                android:background="@color/colorWhite"
+                />
+
+        </LinearLayout>
+
+        <!-- Row :  max mean -->
+        <LinearLayout
+
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_gravity="center_horizontal"
+            android:paddingTop="5dp"
+            >
+
+            <TextView
+                android:labelFor="@+id/settingsNumMeanOutput"
+                android:text="@string/settings_num_mean"
+                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="25"
+                android:gravity="end"
+
+                android:textColor="@color/colorTextBlack"
+                android:background="@color/colorScreenBackground"
+                />
+            <EditText
+                android:id="@id/settingsNumMeanOutput"
+
+                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="75"
+                android:gravity="center"
+
+                android:inputType="number"
+
+                android:layout_marginEnd="@dimen/row_cap_margin"
+
+                android:textColor="@color/colorTextBlack"
+                android:enabled="false"
+                android:background="@color/colorWhite"
+                />
+
+        </LinearLayout>
+
+
+
+        <!-- UI Digits of Precision -->
+        <TextView
+
+            android:layout_height="wrap_content"
+            android:layout_width= "match_parent"
+
+            android:gravity=      "center_horizontal"
+
+            android:freezesText="true"
+
+            android:focusable="false"
+
+            android:paddingTop="@dimen/row_between_rows_margin"
+
+            android:text="@string/ui_precision"
+            android:textColor=    "@color/colorTextBlack"
+            android:background=   "@color/colorScreenBackground"
+            />
+
+        <!-- Row : Location Precision -->
+        <LinearLayout
+
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_gravity="center_horizontal"
+            android:paddingTop="5dp"
+            >
+            <TextView
+                android:labelFor="@+id/locPrecisionInput"
+                android:text="@string/exc_switch_proj_loc_prc"
+                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="25"
+                android:gravity="end"
+
+                android:textColor="@color/colorTextBlack"
+                android:background="@color/colorScreenBackground"
+                />
+            <EditText
+                android:id="@id/locPrecisionInput"
+
+                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="25"
+                android:gravity="center"
+
+                android:inputType="number"
+                android:imeOptions="flagNoExtractUi"
+                android:layout_marginEnd="@dimen/row_cap_margin"
+
+                android:textColor="@color/colorTextBlack"
+                android:enabled="false"
+                android:background="@color/colorWhite"
+                />
+
+
+        </LinearLayout>
+
+        <!-- Row : StdDev Precision -->
+        <LinearLayout
+
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_gravity="center_horizontal"
+            android:paddingTop="5dp"
+            >
+            <TextView
+                android:labelFor="@+id/stdDevPrecisionInput"
+                android:text="@string/exc_switch_proj_std_prc"
+                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="25"
+                android:gravity="end"
+
+                android:textColor="@color/colorTextBlack"
+                android:background="@color/colorScreenBackground"
+                />
+            <EditText
+                android:id="@id/stdDevPrecisionInput"
+
+                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="25"
+                android:gravity="center"
+
+                android:inputType="number"
+                android:imeOptions="flagNoExtractUi"
+                android:layout_marginEnd="@dimen/row_cap_margin"
+
+                android:textColor="@color/colorTextBlack"
+                android:enabled="false"
+                android:background="@color/colorWhite"
+                />
+
+
+        </LinearLayout>
+
+        <!-- Row : Scale Factor Precision -->
+        <LinearLayout
+
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_gravity="center_horizontal"
+            android:paddingTop="5dp"
+            >
+            <TextView
+                android:labelFor="@+id/sfPrecisionInput"
+                android:text="@string/exc_switch_proj_sf_prc"
+                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="25"
+                android:gravity="end"
+
+                android:textColor="@color/colorTextBlack"
+                android:background="@color/colorScreenBackground"
+                />
+            <EditText
+                android:id="@id/sfPrecisionInput"
+
+                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="25"
+                android:gravity="center"
+
+                android:inputType="number"
+                android:imeOptions="flagNoExtractUi"
+                android:layout_marginEnd="@dimen/row_cap_margin"
+
+                android:textColor="@color/colorTextBlack"
+                android:enabled="false"
+                android:background="@color/colorWhite"
+                />
+
+
+        </LinearLayout>
+
+        <!-- Row : Convergence Angle Precision -->
+        <LinearLayout
+
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_gravity="center_horizontal"
+            android:paddingTop="5dp"
+            >
+            <TextView
+                android:labelFor="@+id/caPrecisionInput"
+                android:text="@string/exc_switch_proj_ca_prc"
+                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="25"
+                android:gravity="end"
+
+                android:textColor="@color/colorTextBlack"
+                android:background="@color/colorScreenBackground"
+                />
+            <EditText
+                android:id="@id/caPrecisionInput"
+
+                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="25"
+                android:gravity="center"
+
+                android:inputType="number"
+                android:imeOptions="flagNoExtractUi"
+                android:layout_marginEnd="@dimen/row_cap_margin"
+
+                android:textColor="@color/colorTextBlack"
+                android:enabled="false"
+                android:background="@color/colorWhite"
+                />
+
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+
+
+</ScrollView>
+

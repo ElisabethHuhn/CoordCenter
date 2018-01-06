@@ -1,0 +1,291 @@
+<resources>
+    <string name="app_name">CoordCenter</string>
+    <string name="action_settings">Settings</string>
+
+    <!-- Main Home Screen Strings -->
+    <!-- Menu Items -->
+    <string name="action_home"              >Home</string>
+    <string name="action_measure"           >Measure Coordinate</string>
+
+
+    <!-- Screen Subtitles -->
+    <string name="subtitle_home"            >Home</string>
+    <string name="subtitle_settings"        >Settings</string>
+    <string name="subtitle_measure"         >Measure Coordinate</string>
+
+
+    <string name="save_precisions_label"    >Save last change</string>
+
+    <!-- Measure -->
+    <string name="coordinate_measure"       >Measure Coordinate</string>
+    <string name="start_stop_data"          >Start / Stop Data </string>
+    <string name="start_stop_mean"          >Start / Stop Mean </string>
+    <string name="data_source_label"        >Coordinate Source</string>
+    <string name="select_data_source"       >Select Data Source</string>
+    <string name="unknown_data_source"      >Unknown Data Source</string>
+    <string name="manual_wgs_data_source"   >Manual WGS84 Entry</string>
+    <string name="manual_spcs_data_source"  >Manual SPCS Entry</string>
+    <string name="manual_utm_data_source"   >Manual UTM Entry</string>
+    <string name="phone_gps"                >Phone GPS</string>
+    <string name="external_gps"             >External GPS</string>
+    <string name="cell_tower_triangulation" >Cell tower triangulation</string>
+    <string name="can_not_mean_manual"      >Can not mean manually entered data</string>
+    <string name="master_height_label"      >Enter Height Correction</string>
+    <string name="corrected_elevation_label">Corrected Elevation</string>
+    <string name="selected_data_source"     >Selected Data Source is: %s</string>
+    <string name="phone_gps_not_enabled"    >GPS not enabled</string>
+
+
+    <string name="external_gps_not_available">External GPS not available</string>
+    <string name="phone_gps_not_available"  >Phone GPS not available</string>
+    <string name="cell_tower_triangu_not_available" >Cell Tower triangulation not available</string>
+    <string name="save_not_available"       >Save not available</string>
+    <string name="zone_input_hint"          >Must input UTM Zone before converting</string>
+    <string name="mean_token_not_saved"     >Could not save raw data in Mean</string>
+
+
+    <string name="mean_in_progress_string"  >Mean in progress</string>
+    <string name="mean_not_in_progress_string">Mean NOT in progress</string>
+
+
+    <string name="convert_button_label"     >Convert</string>
+    <string name="convert_coordinates"      >Convert Coordinates</string>
+    <string name="convert_error_mean"       >Can not convert while mean in progress</string>
+    <string name="convert_error_ui"         >Can not convert until screen initialized</string>
+    <string name="convert_error_source"     >Can not convert, source data not valid</string>
+    <string name="convert_failed"           >Conversion Failed</string>
+    <string name="convert_success"          >Coordinates Converted</string>
+
+    <string name="clear_form_button_label"  >Clear Form</string>
+
+    <!-- Text View Labels (initial text displayed) -->
+    <string name="distance_units_label"             >Dist Units: </string>
+    <string name="decimal_display_label"            >Decimal Display: </string>
+    <string name="angle_units_label"                >Angle Units: </string>
+    <string name="angle_display_label"              >Angle Display: </string>
+    <string name="grid_direction_label"             >Grid Direction: </string>
+    <string name="scale_factor_settings_label"      >Scale Factor: </string>
+    <string name="sea_level_label"                  >Sea Level: </string>
+    <string name="refraction_label"                 >Refraction: </string>
+    <string name="datum_label"                      >Datum: </string>
+    <string name="projection_label"                 >Projection: </string>
+
+    <string name="coordinate_display_label"         >Scale Factor: </string>
+    <string name="geod_model_label"                 >Geoid Model: </string>
+    <string name="starting_point_id_label"          >Starting Point ID: </string>
+    <string name="alphanumeric_label"               >Alphanumeric: </string>
+    <string name="feature_codes_label"              >Feature Codes: </string>
+    <string name="feature_codes_control_file_label" >FC Control File: </string>
+    <string name="feature_codes_time_stamp_label"   >FC Time Stamp: </string>
+
+
+
+    <!-- Settings Screen  -->
+    <string name="start_gps_button_label"   >Start GPS</string>
+    <string name="stop_gps_button_label"    >Stop GPS</string>
+    <string name="gps_on"                   >GPS is on</string>
+    <string name="gps_off"                  >GPS is off</string>
+
+    <string name="autosave_on"              >Autosave on</string>
+    <string name="autosave_off"             >Autosave off</string>
+    <string name="autosave_on_label"        >autosave</string>
+    <string name="autosave_off_label"       >manual save</string>
+    <string name="autosave_label"           >   Automatic Save   </string>
+    <string name="terminology_label"        >    Terminology    </string>
+    <string name="rms_label"                >RMS</string>
+    <string name="std_label"                >StdDev</string>
+    <string name="coord_ord_label"          >     Coord Order     </string>
+    <string name="coord_ord_on_label"       >Lat / Lng</string>
+    <string name="coord_ord_off_label"      >Lng / Lat</string>
+    <string name="coord_ne_ord_label"       >     Coord Order     </string>
+    <string name="coord_ne_ord_on_label"    >NorthingEasting</string>
+    <string name="coord_ne_ord_off_label"   >EastingNorthing</string>
+    <string name="dd_dms_label"             >       Location      </string>
+    <string name="dd_dms_on_label"          >DD</string>
+    <string name="dd_dms_off_label"         >DMS</string>
+    <string name="hemisph_label"            > Hemisphere </string>
+    <string name="hemisph_on_label"         >NSEW</string>
+    <string name="hemisph_off_label"        >+/-</string>
+    <string name="ca_label"                 > Convergence Angle </string>
+
+    <string name="ui_precision"                  >Digits of Precision for User Interface</string>
+    <string name="export_precision"              >---------- Digits of Precision for Exchange ----------</string>
+    <string name="exc_switch_proj_loc_prc"       >Loc Precision</string>
+    <string name="exc_switch_proj_std_prc"       >RMS Precision</string>
+    <string name="exc_switch_proj_ca_prc"        >Convergence Precision</string>
+    <string name="exc_switch_proj_sf_prc"        >Scale Factor Precision</string>
+
+    <string name="gps_wgs84_prompt" >---------------  Current GPS Position: WGS84  ---------------</string>
+    <string name="gps_raw_data_prompt">---------------  Raw Data Sourced Position: WGS84  ---------------</string>
+    <string name="mean_wgs84_prompt">---------------  Meaned GPS Position: WGS84  ---------------</string>
+    <string name="wgs84_prompt"             >WGS84 Coordinate</string>
+    <string name="nad83_prompt"     >---------------  NAD83 Coordinate  ---------------</string>
+    <string name="spc_prompt"       >---------------  SPSC: State Plane Coordinate  ---------------</string>
+    <string name="utm_prompt"       >---------------  UTM: Universal Transverse Mercator Coordinate  ---------------</string>
+    <string name="null_prompt"              >Please select Coordinate Type</string>
+    <string name="unrecognized_coordinate"  >Unrecognized Coordinate Type</string>
+    <string name="enter_coordinate_type"    >Select Coordinate Type for this point</string>
+    <string name="coordinate_type"          >Coordinate Type </string>
+    <string name="zero_decimal_string"      >0.0</string>
+    <string name="default_latband"          >A</string>
+    <string name="default_zone"             >0</string>
+    <string name="default_hemisphere"       >N</string>
+    <string name="null_hemisphere"          > </string>
+
+    <string name="mean_start_time_label"        >Start time:</string>
+    <string name="mean_end_time_label"          >End time:</string>
+    <string name="mean_start_timestamp_label"   >Start:</string>
+    <string name="mean_end_timestamp_label"     >End:</string>
+    <string name="mean_number_of_points_label"  ># read</string>
+    <string name="mean_standard_deviation"      >SDev:</string>
+    <string name="mean_lat_sigma"               >Lat SDev:</string>
+    <string name="mean_lng_sigma"               >Lng SDev:</string>
+    <string name="mean_elev_sigma"              >Ele SDev:</string>
+    <string name="mean_vector_sigma"            >Vect SDev:</string>
+    <string name="gps_time_label"               >Timestamp:</string>
+    <string name="gps_timestamp_label"          >NMEA timestamp</string>
+
+    <string name="latitude_prompt"      >Latitude must be between -80.0 and 84.0</string>
+    <string name="longitude_prompt"     >Longitude must be between -180.0 and 180.0</string>
+    <string name="elevation_prompt"     >Elevation Prompt (What should this say?)</string>
+
+    <string name="coordinate_type_button"        >Change Type</string>
+    <string name="type_decimal_degrees_label"    >Decimal Degrees</string>
+    <string name="type_hemisphere_label"         >H</string>
+    <string name="type_lat_dir"                  >NS</string>
+    <string name="type_lng_dir"                  >EW</string>
+    <string name="hemisphere_N"                  >N</string>
+    <string name="hemisphere_S"                  >S</string>
+    <string name="hemisphere_E"                  >E</string>
+    <string name="hemisphere_W"                  >W</string>
+    <string name="type_degrees_label"            >Deg</string>
+    <string name="type_minutes_label"            >Min</string>
+    <string name="type_seconds_label"            >Sec</string>
+    <string name="degrees_label"                 >°</string>
+    <string name="minutes_label"                 >\'</string>
+    <string name="seconds_label"                 > " </string>
+    <string name="type_elevation_label"         >Elevation</string>
+    <string name="type_geoid_height_label"      >Geoid Height</string>
+
+    <string name="utm_integer_output_prompt"    >Meter Precision UTM  (from IBM)</string>
+    <string name="utm_nanometer_output_prompt"  >Nanometer Precision UTM (GeoBot)</string>
+    <string name="utm_so_output_prompt"         >Foot Precision UTM (from Stack Overflow)</string>
+
+    <!--Input error Message-->
+    <string name="input_double_format_error_string" >Not in correct decimal Format</string>
+    <string name="input_wrong_range_error"          >Not within range, (see prompt)</string>
+    <string name="gps_off_before_save"          >GPS must be off to save coordinate</string>
+
+    <!-- Text View Labels (initial text displayed) -->
+    <string name="latitude_label"           >Lat:  </string>
+    <string name="longitude_label"          >Lng: </string>
+    <string name="e_label"                  >E:  </string>
+    <string name="n_label"                  >N: </string>
+    <string name="elevation_label"          >Ele:  </string>
+    <string name="geoid_height_label"       >Geoid: </string>
+
+    <string name="utm_integer_label"        >UTM Coord: </string>
+    <string name="utm_coord_label"          >UTM Coord: </string>
+    <string name="utm_so_label"             >UTM Coord: </string>
+    <string name="utm_zone_label"           >Zone </string>
+    <string name="utm_easting_label"        >Easting:</string>
+    <string name="utm_northing_label"       >Northing:</string>
+
+
+    <string name="utm_hemisphere_label"     >Hemi </string>
+    <string name="utm_latband_label"        >Latband </string>
+    <string name="utm_meters"              >in Meters:</string>
+    <string name="utm_feet"                 >in Feet:</string>
+
+    <string name="spc_label"                >SPC Coord: </string>
+    <string name="spc_zone_label"           >SPC Zone </string>
+    <string name="spc_easting_label"        >Easting:</string>
+    <string name="spc_northing_label"       >Northing:</string>
+    <string name="spc_hemisphere_label"     >Hemi </string>
+    <string name="spc_state_label"          >State </string>
+    <string name="spc_zone_error"           >SPCS Zone not found</string>
+
+    <string name="coord_label"          >Coord: </string>
+    <string name="zone_label"           >Zone </string>
+    <string name="easting_label"        >Easting:</string>
+    <string name="northing_label"       >Northing:</string>
+    <string name="hemisphere_label"     >Hemi </string>
+    <string name="latband_label"        >Latband </string>
+    <string name="in_meters_label"      >in Meters:</string>
+    <string name="in_feet_label"        >in Feet:</string>
+    <string name="meters_label"         >Meters</string>
+    <string name="feet_label"           >Feet</string>
+    <string name="ifeet_label"          >International Feet</string>
+
+
+
+    <string name="convergence_label"        >Conv: </string>
+    <string name="scale_factor_label"       >Scale: </string>
+
+    <string name="hdop_label"           >HDOP: </string>
+    <string name="vdop_label"           >VDOP: </string>
+    <string name="tdop_label"           >TDOP: </string>
+    <string name="pdop_label"           >PDOP: </string>
+    <string name="gdop_label"           >GDOP: </string>
+    <string name="hrms_label"           >HRMS: </string>
+    <string name="vrms_label"           >VRMS: </string>
+
+    <string name="sd_easting_label"     >Std Dev E</string>
+    <string name="sd_northing_label"    >Std Dev N</string>
+    <string name="sd_latitude_label"    >Std Dev Lat</string>
+    <string name="sd_longitude_label"   >Std Dev Lng</string>
+    <string name="sd_elevation_label"   >Std Dev Ele</string>
+    <string name="rms_elevation_label"  >Ele RMS</string>
+    <string name="lat_sigma_label"      >Lat SDev:</string>
+    <string name="lng_sigma_label"      >Lng SDev:</string>
+    <string name="ning_sigma_label"     >V SDev:</string>
+    <string name="eing_sigma_label"     >H SDev:</string>
+    <string name="elev_sigma_label"     >Ele SDev:</string>
+    <string name="vector_sigma_label"   >Vect SDev:</string>
+    <string name="lat_rms_label"        >HRMS:</string>
+    <string name="lng_rms_label"        >VRMS:</string>
+    <string name="ning_rms_label"       >VRMS:</string>
+    <string name="eing_rms_label"       >HRMS:</string>
+    <string name="ele_rms_label"        >Ele RMS:</string>
+    <string name="vector_rms_label"     >Vect RMS:</string>
+
+    <string name="coordinate_type_label"    >Coord Type</string>
+    <string name="settings_height_label"    >Height: </string>
+    <string name="settings_num_mean"        >Max in Mean:</string>
+
+    <!-- Spinners -->
+    <string name="dist_units"               >Dist Units</string>
+    <string name="manual_label"             >Manual Save</string>
+    <string name="data_source"              >Data Source</string>
+    <string name="loc_ui_order"             >Loc order</string>
+    <string name="latlng_ui_order"          >UI Order: Latitude/Longitude</string>
+    <string name="lnglat_ui_order"          >UI Order: Longitude/Latitude</string>
+    <string name="ne_ui_order"              >UI Order: Northing/Easting</string>
+    <string name="en_ui_order"              >UI Order: Easting/Northing</string>
+    <string name="latlng_order"             >Lat/Lng or Lng/Lat order</string>
+    <string name="rms_stddev_terminology"   >RMS or StdDev used</string>
+    <string name="dd_dms_terminology"       >DD or DMS</string>
+    <string name="dd_ui_display"            >Locations in Digital Degrees</string>
+    <string name="dms_ui_display"           >Locations in Degrees/Minutes/Seconds</string>
+    <string name="ca_dd_ui_display"         >Convergence Angle in Digital Degrees</string>
+    <string name="ca_dms_ui_display"        >Convergence Angle in Degrees/Minutes/Seconds</string>
+    <string name="rms_ui_display"           >RMS: Root Mean Square</string>
+    <string name="std_ui_display"           >StdDev: Standard Deviations</string>
+    <string name="dir_hemi_ui_display"      >Hemisphere indicated by Direction (N, S, E, and W)</string>
+    <string name="pm_hemi_ui_display"       >Hemisphere indicated by Plus / Minus</string>
+    <string name="dir_pm_terminology"       >NS/EW or Plus Minus</string>
+    <string name="settings_loc_precision"    >Location Precision</string>
+    <string name="settings_stddev_precision" >RMS Precision</string>
+    <string name="settings_settings_label"   >---------------- Settings -------------------</string>
+
+
+    <string name="export_no_app" >No app found on your phone which can perform this exchange</string>
+
+    <string name="no_coordinates"           >No raw coordinates found</string>
+    <string name="null_type_found"              >Null NMEA type found</string>
+    <string name="start_mean_button_label"  >Start Mean</string>
+    <string name="stop_mean_button_label"   >Stop Mean</string>
+
+    <string name="coordinate_try_again">Coordinates not valid, please input again</string>
+
+</resources>
