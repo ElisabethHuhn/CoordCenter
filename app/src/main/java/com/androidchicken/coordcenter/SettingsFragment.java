@@ -1,18 +1,12 @@
 package com.androidchicken.coordcenter;
 
-import android.Manifest;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.LocationManager;
-import android.os.Build;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.SwitchCompat;
 import android.text.Editable;
-import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,7 +24,7 @@ import android.widget.TextView;
  * These settings deal with how data is shown to the User
  *
  * Created by Elisabeth Huhn on 7/29/17 for GeoBot.
- * Cloned on 1/3/2018
+ * Cloned on 1/3/2018 For CoordCenter
  */
 public class SettingsFragment extends Fragment implements CompoundButton.OnCheckedChangeListener{
 
@@ -39,9 +33,6 @@ public class SettingsFragment extends Fragment implements CompoundButton.OnCheck
     //**********************************************************************/
     //*********   Member Variables  ****************************************/
     //**********************************************************************/
-
-
-
 
     //Constructor
     public SettingsFragment() {
@@ -68,7 +59,12 @@ public class SettingsFragment extends Fragment implements CompoundButton.OnCheck
 
         MainActivity activity = (MainActivity)getActivity();
         if (activity != null) {
-            Utilities.getInstance().hideSoftKeyboard(activity);
+            //get rid of the soft keyboard if it is visible
+
+            EditText aboutWho = v.findViewById(R.id.settingsSpcZoneInput);
+            Utilities.getInstance().showSoftKeyboard(activity, aboutWho);
+            //Utilities.getInstance().hideSoftKeyboard(activity);
+            //Utilities.getInstance().hideKeyboard(activity);
         }
 
         return v;
@@ -101,7 +97,7 @@ public class SettingsFragment extends Fragment implements CompoundButton.OnCheck
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onSave();
+                saveZone();
             }
         });
 
@@ -109,6 +105,7 @@ public class SettingsFragment extends Fragment implements CompoundButton.OnCheck
         wirePrecisions(v);
         wireHeightMean(v);
         wireZone(v);
+        wireOffsets(v);
     }
     private void wireSwitches(View v){
         final MainActivity activity = (MainActivity)getActivity();
@@ -193,8 +190,6 @@ public class SettingsFragment extends Fragment implements CompoundButton.OnCheck
     private void wirePrecisions(View v){
         final MainActivity activity = (MainActivity)getActivity();
         if (activity == null)return;
-
-
 
         TextWatcher precisionTextWatcher = new TextWatcher() {
             @Override
@@ -310,6 +305,118 @@ public class SettingsFragment extends Fragment implements CompoundButton.OnCheck
         caPrecisionView.setEnabled(true);
 
     }
+    private void wireOffsets(View v){
+        final MainActivity activity = (MainActivity)getActivity();
+        if (activity == null)return;
+
+        TextWatcher offsetTextWatcher = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence offset, int start, int count, int after) {
+                //This tells you that text is about to change.
+                // Starting at character "start", the next "count" characters
+                // will be changed with "after" number of characters
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence offset, int start, int before, int count) {
+                //This tells you where the text has changed
+                //Starting at character "start", the "before" number of characters
+                // has been replaced with "count" number of characters
+                if (!saveOffsets()) enableSaveButton();
+            }
+
+            @Override
+            public void afterTextChanged(Editable offset) {
+                //This tells you that somewhere within editable, it's text has changed
+                int temp = 0;
+                temp++;
+
+
+            }
+        };
+        TextWatcher headingOffsetTextWatcher = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence heading, int start, int count, int after) {
+                //This tells you that text is about to change.
+                // Starting at character "start", the next "count" characters
+                // will be changed with "after" number of characters
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence headingString, int start, int before, int count) {
+                //This tells you where the text has changed
+                //Starting at character "start", the "before" number of characters
+                // has been replaced with "count" number of characters
+
+                if (Utilities.isEmpty(headingString)) {
+                    CCSettings.setHeadingOffset(activity, CCSettings.sHeadingOffsetDefault);
+                } else {
+                    //  do a check on value
+                    double heading = Double.valueOf(headingString.toString().trim());
+                    if ((heading >= 0) && (heading <= 360)) {
+                        if (!saveOffsets()) enableSaveButton();
+                    } else {
+                        Utilities.getInstance().showStatus(activity, R.string.heading_invalid);
+                    }
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable heading) {
+                //This tells you that somewhere within editable, it's text has changed
+
+            }
+        };
+
+        final EditText distanceOffsetView   = v.findViewById(R.id.offsetDistanceInput);
+        final EditText headingOffsetView    = v.findViewById(R.id.offsetHeadingInput);
+        final EditText elevationOffsetView  = v.findViewById(R.id.offsetElevationInput);
+
+
+        distanceOffsetView .addTextChangedListener(offsetTextWatcher);
+        headingOffsetView  .addTextChangedListener(headingOffsetTextWatcher);
+        elevationOffsetView.addTextChangedListener(offsetTextWatcher);
+
+
+
+
+        distanceOffsetView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus){
+                    saveOffsets();
+                }
+            }
+        });
+
+
+        headingOffsetView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus){
+                    saveOffsets();
+                }
+            }
+        });
+
+
+        elevationOffsetView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus){
+                    saveOffsets();
+                }
+            }
+        });
+
+
+
+        distanceOffsetView.setEnabled(true);
+        headingOffsetView.setEnabled(true);
+        elevationOffsetView.setEnabled(true);
+    }
     private void wireHeightMean(View v){
         final MainActivity activity = (MainActivity)getActivity();
         if (activity == null)return;
@@ -396,18 +503,15 @@ public class SettingsFragment extends Fragment implements CompoundButton.OnCheck
         zoneView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View view, boolean hasFocus) {
-                if (hasFocus){
-                    //focus has shifted to zone
-                    enableSaveButton();
-                } else {
+                if (!hasFocus) {
                     //focus has shifted away from zone
 
                     String zoneString = zoneView.getText().toString().trim();
-                    if (Utilities.isEmpty(zoneString)){
-                    } else {
-                        int zone = Integer.valueOf(zoneString);
-                        updateStateUI(activity, fragmentView, zone);
+                    int zone = 0;  //if the string is invalid, use an invalid zone
+                    if (!Utilities.isEmpty(zoneString)) {
+                        zone = Integer.valueOf(zoneString);
                     }
+                    updateStateUI(activity, fragmentView, zone);
                     disableSaveButton();
                 }
             }
@@ -446,10 +550,7 @@ public class SettingsFragment extends Fragment implements CompoundButton.OnCheck
         String [] distanceUnits = new String[]{ CCSettings.sMetersString,
                                                 CCSettings.sFeetString,
                                                 CCSettings.sIntFeetString};
-        //Must be in the same order as the constants defined on Coordinate
-        String [] coordinateTypes = new String[]{   Coordinate.sCoordinateTypeWGS84,
-                                                    Coordinate.sCoordinateTypeSPCS,
-                                                    Coordinate.sCoordinateTypeUTM};
+
         String [] dataSourceTypes = new String[]{   getString(R.string.select_data_source),
                                                     getString(R.string.manual_wgs_data_source),
                                                     getString(R.string.manual_spcs_data_source),
@@ -459,11 +560,9 @@ public class SettingsFragment extends Fragment implements CompoundButton.OnCheck
                                                     getString(R.string.cell_tower_triangulation)};
 
 
-        // TODO: 6/29/2017 conditional envne versus latlngvlnglat only one of these on the screen
         //Then initialize the spinner itself
 
         Spinner distUnitsSpinner           = v.findViewById(R.id.distance_units_spinner);
-        Spinner coordSpinner               = v.findViewById(R.id.coordinate_type_spinner);
         Spinner dataSourceSpinner          = v.findViewById(R.id.data_source_spinner);
 
         // Create the ArrayAdapters using the Activities context AND
@@ -472,9 +571,6 @@ public class SettingsFragment extends Fragment implements CompoundButton.OnCheck
                                                             android.R.layout.simple_spinner_item,
                                                             distanceUnits);
 
-        ArrayAdapter<String> ctAdapter = new ArrayAdapter<>(getActivity(),
-                                                            android.R.layout.simple_spinner_item,
-                                                            coordinateTypes);
 
         ArrayAdapter<String> dsAdapter = new ArrayAdapter<>(getActivity(),
                                                             android.R.layout.simple_spinner_item,
@@ -483,12 +579,10 @@ public class SettingsFragment extends Fragment implements CompoundButton.OnCheck
 
         // Specify the layout to use when the list of choices appears
         duAdapter .setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        ctAdapter .setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         dsAdapter .setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         // Apply the adapter to the spinner
         distUnitsSpinner    .setAdapter(duAdapter);
-        coordSpinner        .setAdapter(ctAdapter);
         dataSourceSpinner   .setAdapter(dsAdapter);
 
         //attach the listener to the spinner
@@ -502,25 +596,7 @@ public class SettingsFragment extends Fragment implements CompoundButton.OnCheck
                     // which should be in the same order as the constants: Settings.sMeter, etc
 
                     CCSettings.setDistUnits(activity, position);
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-        coordSpinner     .setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
-                //reset the new value
-                MainActivity activity = (MainActivity)getActivity();
-                if (activity != null) {
-                    //Based on the order presented to the user,
-                    // which should be in the same order as the constants: Settings.sMeter, etc
-
-                    CCSettings.setCoordinateType(activity, position);
+                    disableSaveButton();
                 }
             }
 
@@ -593,6 +669,7 @@ public class SettingsFragment extends Fragment implements CompoundButton.OnCheck
 
     }
 
+    /* a Better more complete check
     public boolean isLocationServicesAvailable() {
         MainActivity activity = (MainActivity)getActivity();
         if (activity == null)return false;
@@ -625,9 +702,20 @@ public class SettingsFragment extends Fragment implements CompoundButton.OnCheck
 
         return isAvailable && (coarsePermissionCheck || finePermissionCheck);
     }
-
+*/
 
     private void initializeUI(View v) {
+
+        initializeSwitches(v);
+        initializeSpinners(v);
+        initializeZone(v);
+        initializeHeightMean(v);
+        initializePrecision(v);
+        initializeOffsets(v);
+
+        disableSaveButton();
+    }
+    private void initializeSwitches(View v) {
         MainActivity activity = (MainActivity)getActivity();
 
         //
@@ -647,6 +735,10 @@ public class SettingsFragment extends Fragment implements CompoundButton.OnCheck
         locDDvDMSSwitch     .setChecked(CCSettings.isLocDD(activity));
         caDDvDMSSwitch      .setChecked(CCSettings.isCADD(activity));
         hemiIndicatorSwitch .setChecked(CCSettings.isDir(activity));
+
+    }
+    private void initializePrecision(View v) {
+        MainActivity activity = (MainActivity)getActivity();
 
 
         //
@@ -673,18 +765,53 @@ public class SettingsFragment extends Fragment implements CompoundButton.OnCheck
         precisionString = String.valueOf(precision);
         caPrecisionView.setText(precisionString);
 
+    }
+    private void initializeOffsets(View v) {
+        MainActivity activity = (MainActivity)getActivity();
+
+
+        //
+        // Offset Inputs
+        //
+
+        final EditText distanceOffsetView   = v.findViewById(R.id.offsetDistanceInput);
+        final EditText headingOffsetView    = v.findViewById(R.id.offsetHeadingInput);
+        final EditText elevationOffsetView  = v.findViewById(R.id.offsetElevationInput);
+
+        double offset = CCSettings.getDistanceOffset(activity);
+        String offsetString = String.valueOf(offset);
+        distanceOffsetView.setText(offsetString);
+
+        offset = CCSettings.getHeadingOffset(activity);
+        offsetString = String.valueOf(offset);
+        headingOffsetView.setText(offsetString);
+
+        offset = CCSettings.getElevationOffset(activity);
+        offsetString = String.valueOf(offset);
+        elevationOffsetView.setText(offsetString);
+    }
+    private void initializeZone(View v) {
+        MainActivity activity = (MainActivity)getActivity();
+
         //
         // Zone, Height, # of Meaning samples
         //
         EditText zoneView    = v.findViewById(R.id.settingsSpcZoneInput);
-        TextView stateView   = v.findViewById(R.id.settingsSpcStateOutput);
-        EditText heightView  = v.findViewById(R.id.settingsHeightOutput);
-        EditText maxMeanView = v.findViewById(R.id.settingsNumMeanOutput);
 
         int zone = CCSettings.getZone(activity);
         zoneView.setText(String.valueOf(zone));
 
         updateStateUI(activity, v, zone);
+
+    }
+    private void initializeHeightMean(View v) {
+        MainActivity activity = (MainActivity)getActivity();
+
+        //
+        // Height, # of Meaning samples
+        //
+        EditText heightView  = v.findViewById(R.id.settingsHeightOutput);
+        EditText maxMeanView = v.findViewById(R.id.settingsNumMeanOutput);
 
         double height = CCSettings.getHeight(activity);
         heightView.setText(String.valueOf(height));
@@ -692,33 +819,25 @@ public class SettingsFragment extends Fragment implements CompoundButton.OnCheck
         int maxMean = CCSettings.getNumMean(activity);
         maxMeanView.setText(String.valueOf(maxMean));
 
+    }
+    private void initializeSpinners(View v) {
+        MainActivity activity = (MainActivity)getActivity();
+
         //
         // Spinners
         //
         Spinner distUnitsSpinner           = v.findViewById(R.id.distance_units_spinner);
-        Spinner coordSpinner               = v.findViewById(R.id.coordinate_type_spinner);
         Spinner dataSourceSpinner          = v.findViewById(R.id.data_source_spinner);
 
         int position = CCSettings.getDistanceUnits(activity);
         distUnitsSpinner.setSelection(position);
 
-        position = CCSettings.getCoordinateType(activity);
-        coordSpinner.setSelection(position);
-
         position = CCSettings.getDataSource(activity);
         dataSourceSpinner.setSelection(position);
 
-        disableSaveButton();
     }
 
-    void updateStateUI(MainActivity activity, int zone){
-        View v = getView();
-        if (v == null)return;
-
-        updateStateUI(activity, v, zone);
-    }
-
-    void updateStateUI(MainActivity activity, View v, int zone){
+    void    updateStateUI(MainActivity activity, View v, int zone){
         TextView stateView   = v.findViewById(R.id.settingsSpcStateOutput);
 
         CoordinateConstants constants = new CoordinateConstants(zone);
@@ -761,13 +880,16 @@ public class SettingsFragment extends Fragment implements CompoundButton.OnCheck
         return true;
     }
 
-
     private void setSubtitle(){
 
         ((MainActivity) getActivity()).setSubtitle(getString(R.string.subtitle_settings));
 
     }
 
+
+    //***********************************/
+    //****     Save Button        *******/
+    //***********************************/
 
     void enableSaveButton(){
         View v = getView();
@@ -777,7 +899,6 @@ public class SettingsFragment extends Fragment implements CompoundButton.OnCheck
         saveButton.setEnabled(true);
         saveButton.setTextColor(Color.BLACK);
     }
-
     void disableSaveButton(){
         View v = getView();
         if (v == null)return;
@@ -785,30 +906,6 @@ public class SettingsFragment extends Fragment implements CompoundButton.OnCheck
         Button saveButton = v.findViewById(R.id.settingSaveButton);
         saveButton.setEnabled(false);
         saveButton.setTextColor(Color.GRAY);
-    }
-
-
-    //***********************************/
-    //****     Save Button        *******/
-    //***********************************/
-    private void onSave() {
-        MainActivity activity = (MainActivity)getActivity();
-        if (activity == null)return;
-
-        View v = getView();
-        if (v == null)return;
-
-        //The switches do not need to be saved as they are saved whenever they change
-
-        savePrecisions();
-
-        saveHeightMean();
-
-        saveZone();
-
-        saveZone();
-
-        disableSaveButton();
     }
 
     boolean savePrecisions(){
@@ -857,6 +954,43 @@ public class SettingsFragment extends Fragment implements CompoundButton.OnCheck
         disableSaveButton();
         return true;
     }
+    boolean saveOffsets(){
+        MainActivity activity = (MainActivity)getActivity();
+        if (activity == null)return false;
+
+        View v = getView();
+        if (v == null)return false;
+
+
+        final EditText distanceOffsetView   = v.findViewById(R.id.offsetDistanceInput);
+        final EditText headingOffsetView    = v.findViewById(R.id.offsetHeadingInput);
+        final EditText elevationOffsetView  = v.findViewById(R.id.offsetElevationInput);
+
+
+        String offsetString = distanceOffsetView.getText().toString().trim();
+        if (!Utilities.isEmpty(offsetString)) {
+            CCSettings.setDistanceOffset(activity, Double.valueOf(offsetString));
+        } else {
+            CCSettings.setDistanceOffset(activity, CCSettings.sDistanceOffsetDefault);
+        }
+
+        offsetString = headingOffsetView.getText().toString().trim();
+        if (!Utilities.isEmpty(offsetString)) {
+            CCSettings.setHeadingOffset(activity, Double.valueOf(offsetString));
+        } else {
+            CCSettings.setHeadingOffset(activity, CCSettings.sHeadingOffsetDefault);
+        }
+
+        offsetString = elevationOffsetView.getText().toString().trim();
+        if (!Utilities.isEmpty(offsetString)) {
+            CCSettings.setElevationOffset(activity, Double.valueOf(offsetString));
+        } else {
+            CCSettings.setElevationOffset(activity, CCSettings.sElevationOffsetDefault);
+        }
+
+        disableSaveButton();
+        return true;
+    }
     boolean saveHeightMean(){
         MainActivity activity = (MainActivity)getActivity();
         if (activity == null)return false;
@@ -886,12 +1020,12 @@ public class SettingsFragment extends Fragment implements CompoundButton.OnCheck
         disableSaveButton();
         return true;
     }
-    boolean saveZone(){
+    void saveZone(){
         MainActivity activity = (MainActivity)getActivity();
-        if (activity == null)return false;
+        if (activity == null)return ;
 
         View v = getView();
-        if (v == null)return false;
+        if (v == null)return ;
 
 
         EditText zoneView    = v.findViewById(R.id.settingsSpcZoneInput);
@@ -906,7 +1040,6 @@ public class SettingsFragment extends Fragment implements CompoundButton.OnCheck
 
 
         disableSaveButton();
-        return true;
     }
 
 }

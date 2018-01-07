@@ -92,42 +92,21 @@
             android:checked="true" />
 
 
-        <!--  Spinners  -->
+        <!-- Break -->
+        <TextView
 
-        <!-- Row : Project Coordinate Type Spinner -->
-        <LinearLayout
-
+            android:text="@string/break_label"
             android:layout_height="wrap_content"
-            android:layout_width ="match_parent"
-            android:layout_gravity="center_horizontal"
-            android:paddingTop="5dp"
-            >
-            <TextView
-                android:labelFor="@+id/coordinate_type_spinner"
-                android:text="@string/coordinate_type_label"
-                android:layout_height="wrap_content"
-                android:layout_width="0dp"
-                android:layout_weight="25"
-                android:gravity="end"
+            android:layout_width="match_parent"
+            android:layout_weight="25"
+            android:gravity="center"
 
-                android:textColor="@color/colorTextBlack"
-                android:background="@color/colorScreenBackground"
-                />
+            android:textColor="@color/colorTextBlack"
+            android:background="@color/colorScreenBackground"
+            />
 
-            <!--  Spinner to indicate the type of coordinate for the point -->
-            <Spinner
-                android:id            = "@+id/coordinate_type_spinner"
-                android:layout_width  = "0dp"
-                android:layout_height = "wrap_content"
-                android:layout_weight="75"
-                android:layout_marginEnd="@dimen/row_cap_margin"
-                android:textColor="@color/colorTextBlack"
-                android:background="@color/colorWhite"
-                />
-
-        </LinearLayout>
-
-        <!-- Row : Distance Units Spinner -->
+        <!--  Spinners  -->
+        <!--  Distance Units Spinner -->
         <LinearLayout
 
             android:layout_height="wrap_content"
@@ -140,7 +119,7 @@
                 android:text="@string/dist_units"
                 android:layout_height="wrap_content"
                 android:layout_width="0dp"
-                android:layout_weight="25"
+                android:layout_weight="33"
                 android:gravity="end"
 
                 android:textColor="@color/colorTextBlack"
@@ -152,7 +131,7 @@
                 android:id            = "@id/distance_units_spinner"
                 android:layout_width  = "0dp"
                 android:layout_height = "wrap_content"
-                android:layout_weight ="75"
+                android:layout_weight ="67"
                 android:gravity       ="center"
                 android:layout_marginEnd="@dimen/row_cap_margin"
                 android:textColor    ="@color/colorTextBlack"
@@ -174,7 +153,7 @@
                 android:text="@string/data_source"
                 android:layout_height="wrap_content"
                 android:layout_width="0dp"
-                android:layout_weight="25"
+                android:layout_weight="33"
                 android:gravity="end"
 
                 android:textColor="@color/colorTextBlack"
@@ -186,7 +165,7 @@
                 android:id            = "@id/data_source_spinner"
                 android:layout_width  = "0dp"
                 android:layout_height = "wrap_content"
-                android:layout_weight ="75"
+                android:layout_weight ="67"
                 android:gravity       ="center"
                 android:layout_marginEnd="@dimen/row_cap_margin"
                 android:textColor    ="@color/colorTextBlack"
@@ -197,12 +176,23 @@
 
 
         <!--       Text Input        -->
+        <!-- Break -->
+        <TextView
 
+            android:text="@string/break_label"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_weight="25"
+            android:gravity="center"
+
+            android:textColor="@color/colorTextBlack"
+            android:background="@color/colorScreenBackground"
+            />
         <!-- Save Button -->
         <Button
             style="?android:attr/buttonBarButtonStyle"
             android:id="@+id/settingSaveButton"
-            android:text="@string/save_precisions_label"
+            android:text="@string/save_zone_label"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:layout_weight="1"
@@ -284,6 +274,19 @@
 
         </LinearLayout>
 
+        <!-- Break -->
+        <TextView
+
+            android:text="@string/break_label"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_weight="25"
+            android:gravity="center"
+
+            android:textColor="@color/colorTextBlack"
+            android:background="@color/colorScreenBackground"
+            />
+
         <!-- Row : Height  -->
         <LinearLayout
 
@@ -297,7 +300,7 @@
                 android:text="@string/settings_height_label"
                 android:layout_height="wrap_content"
                 android:layout_width="0dp"
-                android:layout_weight="25"
+                android:layout_weight="33"
                 android:gravity="end"
 
                 android:textColor="@color/colorTextBlack"
@@ -308,7 +311,7 @@
 
                 android:layout_height="wrap_content"
                 android:layout_width="0dp"
-                android:layout_weight="75"
+                android:layout_weight="67"
                 android:gravity="center"
 
                 android:inputType="numberDecimal|numberSigned"
@@ -336,7 +339,7 @@
                 android:text="@string/settings_num_mean"
                 android:layout_height="wrap_content"
                 android:layout_width="0dp"
-                android:layout_weight="25"
+                android:layout_weight="33"
                 android:gravity="end"
 
                 android:textColor="@color/colorTextBlack"
@@ -347,7 +350,7 @@
 
                 android:layout_height="wrap_content"
                 android:layout_width="0dp"
-                android:layout_weight="75"
+                android:layout_weight="67"
                 android:gravity="center"
 
                 android:inputType="number"
@@ -362,7 +365,149 @@
         </LinearLayout>
 
 
+        <!-- Offsets -->
+        <TextView
 
+            android:text="@string/offset_label"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_weight="33"
+            android:gravity="center"
+
+            android:textColor="@color/colorTextBlack"
+            android:background="@color/colorScreenBackground"
+            />
+
+        <!-- Row : Offset Distance -->
+        <LinearLayout
+
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_gravity="center_horizontal"
+            android:paddingTop="5dp"
+            >
+            <TextView
+                android:labelFor="@+id/offsetDistanceInput"
+                android:text="@string/offset_distance_label"
+                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="33"
+                android:gravity="end"
+
+                android:textColor="@color/colorTextBlack"
+                android:background="@color/colorScreenBackground"
+                />
+            <EditText
+                android:id="@id/offsetDistanceInput"
+
+                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="67"
+                android:gravity="center"
+
+                android:inputType="numberDecimal"
+                android:imeOptions="flagNoExtractUi"
+                android:layout_marginEnd="@dimen/row_cap_margin"
+
+                android:textColor="@color/colorTextBlack"
+                android:enabled="true"
+                android:background="@color/colorWhite"
+                />
+
+        </LinearLayout>
+
+        <!-- Row : Offset Heading -->
+        <LinearLayout
+
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_gravity="center_horizontal"
+            android:paddingTop="5dp"
+            >
+            <TextView
+                android:labelFor="@+id/offsetHeadingInput"
+                android:text="@string/offset_heading_label"
+                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="33"
+                android:gravity="end"
+
+                android:textColor="@color/colorTextBlack"
+                android:background="@color/colorScreenBackground"
+                />
+            <EditText
+                android:id="@id/offsetHeadingInput"
+
+                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="67"
+                android:gravity="center"
+
+                android:inputType="numberDecimal"
+                android:imeOptions="flagNoExtractUi"
+                android:layout_marginEnd="@dimen/row_cap_margin"
+
+                android:textColor="@color/colorTextBlack"
+                android:enabled="true"
+                android:background="@color/colorWhite"
+                />
+
+        </LinearLayout>
+
+        <!-- Row : Offset Elevation -->
+        <LinearLayout
+
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_gravity="center_horizontal"
+            android:paddingTop="5dp"
+            >
+            <TextView
+                android:labelFor="@+id/offsetElevationInput"
+                android:text="@string/offset_elevation_label"
+                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="33"
+                android:gravity="end"
+
+                android:textColor="@color/colorTextBlack"
+                android:background="@color/colorScreenBackground"
+                />
+            <EditText
+                android:id="@id/offsetElevationInput"
+
+                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="67"
+                android:gravity="center"
+
+                android:inputType="numberDecimal"
+                android:imeOptions="flagNoExtractUi"
+                android:layout_marginEnd="@dimen/row_cap_margin"
+
+                android:textColor="@color/colorTextBlack"
+                android:enabled="true"
+                android:background="@color/colorWhite"
+                />
+
+        </LinearLayout>
+
+
+
+
+        <!-- Precisions -->
+
+        <TextView
+
+            android:text="@string/precision_label"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_weight="33"
+            android:gravity="center"
+
+            android:textColor="@color/colorTextBlack"
+            android:background="@color/colorScreenBackground"
+            />
         <!-- UI Digits of Precision -->
         <TextView
 
@@ -395,7 +540,7 @@
                 android:text="@string/exc_switch_proj_loc_prc"
                 android:layout_height="wrap_content"
                 android:layout_width="0dp"
-                android:layout_weight="25"
+                android:layout_weight="33"
                 android:gravity="end"
 
                 android:textColor="@color/colorTextBlack"
@@ -406,7 +551,7 @@
 
                 android:layout_height="wrap_content"
                 android:layout_width="0dp"
-                android:layout_weight="25"
+                android:layout_weight="67"
                 android:gravity="center"
 
                 android:inputType="number"
@@ -434,7 +579,7 @@
                 android:text="@string/exc_switch_proj_std_prc"
                 android:layout_height="wrap_content"
                 android:layout_width="0dp"
-                android:layout_weight="25"
+                android:layout_weight="33"
                 android:gravity="end"
 
                 android:textColor="@color/colorTextBlack"
@@ -445,7 +590,7 @@
 
                 android:layout_height="wrap_content"
                 android:layout_width="0dp"
-                android:layout_weight="25"
+                android:layout_weight="67"
                 android:gravity="center"
 
                 android:inputType="number"
@@ -473,7 +618,7 @@
                 android:text="@string/exc_switch_proj_sf_prc"
                 android:layout_height="wrap_content"
                 android:layout_width="0dp"
-                android:layout_weight="25"
+                android:layout_weight="33"
                 android:gravity="end"
 
                 android:textColor="@color/colorTextBlack"
@@ -484,7 +629,7 @@
 
                 android:layout_height="wrap_content"
                 android:layout_width="0dp"
-                android:layout_weight="25"
+                android:layout_weight="67"
                 android:gravity="center"
 
                 android:inputType="number"
@@ -512,7 +657,7 @@
                 android:text="@string/exc_switch_proj_ca_prc"
                 android:layout_height="wrap_content"
                 android:layout_width="0dp"
-                android:layout_weight="25"
+                android:layout_weight="33"
                 android:gravity="end"
 
                 android:textColor="@color/colorTextBlack"
@@ -523,7 +668,7 @@
 
                 android:layout_height="wrap_content"
                 android:layout_width="0dp"
-                android:layout_weight="25"
+                android:layout_weight="67"
                 android:gravity="center"
 
                 android:inputType="number"

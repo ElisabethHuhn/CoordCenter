@@ -561,41 +561,43 @@ public class Utilities {
         }
     }
 
-    void showSoftKeyboard(FragmentActivity context, EditText textField){
+    void showSoftKeyboard(FragmentActivity activity, EditText textField){
         //Give the view the focus, then show the keyboard
 
         textField.requestFocus();
         InputMethodManager imm =
-                (InputMethodManager)context.getSystemService(Context.INPUT_METHOD_SERVICE);
-        //second parameter is flags. We don't need any of them
-        imm.showSoftInput(textField, InputMethodManager.SHOW_FORCED);
-        clearFocus(context);
+                (InputMethodManager)activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (imm != null) {
+            //second parameter is flags. We don't need any of them
+            imm.showSoftInput(textField, InputMethodManager.SHOW_FORCED);
+            clearFocus(activity);
+        }
     }
 
-    void hideSoftKeyboard(FragmentActivity context){
+    void hideSoftKeyboard(FragmentActivity activity){
         // Check if no view has focus:
-        View view = context.getCurrentFocus();
+        View view = activity.getCurrentFocus();
         if (view != null) {
             view.clearFocus();
             InputMethodManager imm =
-                    (InputMethodManager)context.getSystemService(Context.INPUT_METHOD_SERVICE);
+                    (InputMethodManager)activity.getSystemService(Context.INPUT_METHOD_SERVICE);
             //second parameter is flags. We don't need any of them
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
 
 
         }
         //close the keyboard
-        context.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+        activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
     }
 
-    void toggleSoftKeyboard(FragmentActivity context){
+    void toggleSoftKeyboard(FragmentActivity activity){
         //hide the soft keyboard
         // Check if no view has focus:
-        View view = context.getCurrentFocus();
+        View view = activity.getCurrentFocus();
         if (view != null) {
             view.clearFocus();
             InputMethodManager imm =
-                    (InputMethodManager)context.getSystemService(Context.INPUT_METHOD_SERVICE);
+                    (InputMethodManager)activity.getSystemService(Context.INPUT_METHOD_SERVICE);
             //second parameter is flags. We don't need any of them
             imm.toggleSoftInputFromWindow(view.getWindowToken(),0, 0);
         }
@@ -603,10 +605,10 @@ public class Utilities {
     }
 
 
-    void clearFocus(FragmentActivity context){
+    void clearFocus(FragmentActivity activity){
         //hide the soft keyboard
         // Check if no view has focus:
-        View view = context.getCurrentFocus();
+        View view = activity.getCurrentFocus();
         if (view != null) {
             view.clearFocus();
         }

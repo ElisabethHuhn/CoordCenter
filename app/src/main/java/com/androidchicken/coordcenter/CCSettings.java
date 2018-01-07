@@ -41,6 +41,9 @@ public class CCSettings {
     private static final String sDataSourceTag= "DATA_SOURCE";
     private static final String sNumMeanTag   = "NUM_MEAN";
     private static final String sZoneTag      = "ZONE";
+    private static final String sDistanceOffsetTag  = "DISTANCE_OFFSET";
+    private static final String sHeadingOffsetTag   = "HEADING_OFFSET";
+    private static final String sElevationOffsetTag = "ELEVATION_OFFSET";
 
 
     private static final String sLocPrcTag    = "LOC_PRC";
@@ -88,6 +91,10 @@ public class CCSettings {
     static final int sNumMeanDefault         = 180;
     static final int sDataSourceDefault      = sDataSourcePhoneGps;
     static final int sZoneDefault            = 0 ;
+
+    static final double sDistanceOffsetDefault  = 0 ;
+    static final double sHeadingOffsetDefault   = 0 ;
+    static final double sElevationOffsetDefault = 0 ;
 
 
     //These constants define the order of the corresponding spinner positions
@@ -441,6 +448,30 @@ public class CCSettings {
         setIntSetting(activity, sExCAPrcTag, caPrecision);
     }
 
+
+
+
+
+    static double getDistanceOffset(MainActivity activity) {
+        return getDoubleSetting(activity, sDistanceOffsetTag, sDistanceOffsetDefault);
+    }
+    static void   setDistanceOffset(MainActivity activity, double distance) {
+        setDoubleSetting(activity, sDistanceOffsetTag, distance);
+    }
+
+    static double getHeadingOffset(MainActivity activity) {
+        return getDoubleSetting(activity, sHeadingOffsetTag, sHeadingOffsetDefault);
+    }
+    static void   setHeadingOffset(MainActivity activity, double heading) {
+        setDoubleSetting(activity, sHeadingOffsetTag, heading);
+    }
+
+    static double getElevationOffset(MainActivity activity) {
+        return getDoubleSetting(activity, sElevationOffsetTag, sElevationOffsetDefault);
+    }
+    static void   setElevationOffset(MainActivity activity, double elevation) {
+        setDoubleSetting(activity, sElevationOffsetTag, elevation);
+    }
 
 
 }

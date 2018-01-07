@@ -170,44 +170,36 @@
 
             </LinearLayout>
 
-            <!-- Row: distance units -->
+            <!--  Distance Units Spinner -->
             <LinearLayout
 
                 android:layout_height="wrap_content"
-                android:layout_width="match_parent"
+                android:layout_width ="match_parent"
                 android:layout_gravity="center_horizontal"
-                android:paddingTop="@dimen/row_between_rows_margin"
+                android:paddingTop="5dp"
                 >
-
                 <TextView
-                    android:labelFor="@+id/measureDistanceUnitsInput"
-                    android:text="@string/distance_units_label"
+                    android:labelFor="@+id/distance_units_spinner"
+                    android:text="@string/dist_units"
                     android:layout_height="wrap_content"
                     android:layout_width="0dp"
                     android:layout_weight="25"
                     android:gravity="end"
 
-                    android:layout_marginStart="@dimen/row_cap_margin"
-
                     android:textColor="@color/colorTextBlack"
                     android:background="@color/colorScreenBackground"
                     />
-                <TextView
-                    android:id="@id/measureDistanceUnitsInput"
 
-                    android:layout_height="wrap_content"
-                    android:layout_width="0dp"
-                    android:layout_weight="65"
-                    android:gravity="center"
-
-                    android:inputType="text"
-                    android:imeOptions="flagNoExtractUi"
+                <!--  Spinner to indicate the type of distance Units, Meters or Feet -->
+                <Spinner
+                    android:id            = "@id/distance_units_spinner"
+                    android:layout_width  = "0dp"
+                    android:layout_height = "wrap_content"
+                    android:layout_weight ="75"
+                    android:gravity       ="center"
                     android:layout_marginEnd="@dimen/row_cap_margin"
-
-                    android:enabled="false"
-
-                    android:textColor="@color/colorTextBlack"
-                    android:background="@color/colorGray"
+                    android:textColor    ="@color/colorTextBlack"
+                    android:background   ="@color/colorWhite"
                     />
 
             </LinearLayout>
@@ -1431,6 +1423,19 @@
 
                     android:textColor="@color/colorTextBlack"
                     android:background="@color/colorGreenish"
+                    />
+                <!-- Zone Hint -->
+                <TextView
+                    android:text="@string/spc_zone_change"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:gravity="center"
+
+                    android:paddingBottom="@dimen/row_between_rows_margin"
+
+                    android:textColor="@color/colorTextBlack"
+                    android:background="@color/colorScreenBackground"
                     />
 
                 <!-- break out the fields individually -->

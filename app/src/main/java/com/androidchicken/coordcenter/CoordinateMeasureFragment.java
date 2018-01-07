@@ -21,6 +21,9 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 
+import com.google.android.gms.maps.model.LatLng;
+import com.google.maps.android.SphericalUtil;
+
 import java.util.Date;
 import java.util.Locale;
 
@@ -120,8 +123,6 @@ public class CoordinateMeasureFragment extends Fragment implements GpsStatus.Lis
         }
 
     }
-
-
     private void initializePoint(){
         MainActivity activity = (MainActivity)getActivity();
         if (activity == null)return;
@@ -133,19 +134,19 @@ public class CoordinateMeasureFragment extends Fragment implements GpsStatus.Lis
     }
 
 
-
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(LayoutInflater inflater,
+                             ViewGroup container,
                              Bundle savedInstanceState) {
 
         //Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_coord_measure, container, false);
 
         wireWidgets(v);
-        wireDataSourceSpinner(v);
+        wireSpinners(v);
 
         initializeUI(v);
-
+        initializeSpinners(v);
 
         initializeMeanProgressUI(v);
 
@@ -158,9 +159,6 @@ public class CoordinateMeasureFragment extends Fragment implements GpsStatus.Lis
             //Utilities.getInstance().hideSoftKeyboard(activity);
             //Utilities.getInstance().hideKeyboard(activity);
         }
-
-
-
         isFirst = true;
 
         return v;
@@ -205,10 +203,6 @@ public class CoordinateMeasureFragment extends Fragment implements GpsStatus.Lis
 
         //make DD vs DMS on the project work by making various views invisible
         turnOffViews(v);
-
-
-
-
 
         //Start/Stop Data  Button
         Button startStopDataButton = v.findViewById(R.id.startStopDataButton);
@@ -311,11 +305,9 @@ public class CoordinateMeasureFragment extends Fragment implements GpsStatus.Lis
             @Override
             public void onClick(View v){
 
-                int message = R.string.select_data_source;
+                int message = R.string.convert_error_mean;
                 if (!isMeanInProgress() ) {
                     message = onConvert();
-                } else {
-                    message = R.string.convert_error_mean;
                 }
                 Utilities.getInstance().showStatus(getActivity(), message);
 
@@ -347,7 +339,6 @@ public class CoordinateMeasureFragment extends Fragment implements GpsStatus.Lis
             @Override
             public void onClick(View v){
 
-                // TODO: 1/6/2018 crashes when this button is pressed 
                 MainActivity activity = (MainActivity)getActivity();
                 if (activity == null)return;
 
@@ -361,10 +352,10 @@ public class CoordinateMeasureFragment extends Fragment implements GpsStatus.Lis
                 } else if ((mCurDataSource == CCSettings.sDataSourceWGSManual) ||
                            (mCurDataSource == CCSettings.sDataSourceSPCSManual)||
                            (mCurDataSource == CCSettings.sDataSourceUTMManual))  {
-                    // TODO: 6/22/2017 think about how to lift limitation on meaning manual data
+
                     message = R.string.can_not_mean_manual;
                 } else {
-                    message = startMeaning(mMeanToken);
+                    message = startMeaning();
                 }
                 updateMeanProgressUI();
 
@@ -396,6 +387,159 @@ public class CoordinateMeasureFragment extends Fragment implements GpsStatus.Lis
             vrmsLabelView.setText(vRmsLabel);
         }
     }
+    private void wireSpinners(View v){
+
+        //Create the array of spinner choices from the Types of Coordinates defined
+        //The order of these is used when an item is selected, so if you change these,
+        // change the item selected listener as well
+        String [] distanceUnits = new String[]{ CCSettings.sMetersString,
+                                                CCSettings.sFeetString,
+                                                CCSettings.sIntFeetString};
+
+        String [] dataSourceTypes = new String[]{   getString(R.string.select_data_source),
+                                                    getString(R.string.manual_wgs_data_source),
+                                                    getString(R.string.manual_spcs_data_source),
+                                                    getString(R.string.manual_utm_data_source),
+                                                    getString(R.string.phone_gps),
+                                                    getString(R.string.external_gps),
+                                                    getString(R.string.cell_tower_triangulation)};
+
+
+        //Then initialize the spinner itself
+
+        Spinner distUnitsSpinner           = v.findViewById(R.id.distance_units_spinner);
+        Spinner dataSourceSpinner          = v.findViewById(R.id.data_source_spinner);
+
+        // Create the ArrayAdapters using the Activities context AND
+        // the string array and a default spinner layout
+        ArrayAdapter<String> duAdapter = new ArrayAdapter<>(getActivity(),
+                                                            android.R.layout.simple_spinner_item,
+                                                            distanceUnits);
+
+
+        ArrayAdapter<String> dsAdapter = new ArrayAdapter<>(getActivity(),
+                android.R.layout.simple_spinner_item,
+                dataSourceTypes);
+
+
+        // Specify the layout to use when the list of choices appears
+        duAdapter .setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        dsAdapter .setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        // Apply the adapter to the spinner
+        distUnitsSpinner    .setAdapter(duAdapter);
+        dataSourceSpinner   .setAdapter(dsAdapter);
+
+        //attach the listener to the spinner
+        distUnitsSpinner .setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                //reset the new value
+                MainActivity activity = (MainActivity)getActivity();
+                if (activity != null) {
+                    //Based on the order presented to the user,
+                    // which should be in the same order as the constants: Settings.sMeter, etc
+
+                    CCSettings.setDistUnits(activity, position);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+        dataSourceSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                clearForm();
+                mCurDataSource = position;
+
+                int msg = 0;
+                switch(mCurDataSource){
+                    case CCSettings.sDataSourceNoneSelected:
+                        enableManualWgsInput(sDISABLE);
+                        enableManualSpcsInput(sDISABLE);
+                        enableManualUtmInput(sDISABLE);
+                        stopGps();
+                        msg = R.string.select_data_source;
+                        break;
+                    case CCSettings.sDataSourceWGSManual:
+                        msg = R.string.manual_wgs_data_source;
+                        enableManualWgsInput(sENABLE);
+                        enableManualSpcsInput(sDISABLE);
+                        enableManualUtmInput(sDISABLE);
+                        stopGps();
+
+                        break;
+                    case CCSettings.sDataSourceSPCSManual:
+                        msg = R.string.manual_spcs_data_source;
+                        enableManualWgsInput(sDISABLE);
+                        enableManualSpcsInput(sENABLE);
+                        enableManualUtmInput(sDISABLE);
+                        stopGps();
+
+                        break;
+                    case CCSettings.sDataSourceUTMManual:
+                        msg = R.string.manual_utm_data_source;
+                        enableManualWgsInput(sDISABLE);
+                        enableManualSpcsInput(sDISABLE);
+                        enableManualUtmInput(sENABLE);
+                        stopGps();
+
+                        break;
+                    case CCSettings.sDataSourcePhoneGps:
+
+                        if (isGPSEnabled()) {
+                            initializeGPS();
+                            startGps();
+                            enableManualWgsInput(sDISABLE);
+                            enableManualSpcsInput(sDISABLE);
+                            enableManualUtmInput(sDISABLE);
+                            msg = R.string.phone_gps;
+                        } else {
+                            //tell user no GPS, but otherwise do nothing
+                            msg = R.string.phone_gps_not_enabled;
+                        }
+
+                        break;
+                    case CCSettings.sDataSourceExternalGps:
+                        //msg = R.string.external_gps;
+                        msg = R.string.external_gps_not_available;
+                        enableManualWgsInput(sDISABLE);
+                        enableManualSpcsInput(sDISABLE);
+                        enableManualUtmInput(sDISABLE);
+                        stopGps();
+                        break;
+                    case CCSettings.sDataSourceCellTowerTriangulation:
+                        //msg = R.string.cell_tower_triangulation;
+                        msg = R.string.cell_tower_triangu_not_available;
+                        enableManualWgsInput(sDISABLE);
+                        enableManualSpcsInput(sDISABLE);
+                        enableManualUtmInput(sDISABLE);
+                        stopGps();
+
+                        break;
+                    default:
+                        enableManualWgsInput(sDISABLE);
+                        enableManualSpcsInput(sDISABLE);
+                        enableManualUtmInput(sDISABLE);
+                        stopGps();
+                        msg = R.string.select_data_source;
+                }
+
+                Utilities.getInstance().showStatus(getActivity(), msg);
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                //for now, do nothing
+            }
+        });
+
+    }
+
 
     private void showDop() {
         SatelliteManager satelliteManager = SatelliteManager.getInstance();
@@ -423,11 +567,11 @@ public class CoordinateMeasureFragment extends Fragment implements GpsStatus.Lis
     private void turnOffViews(View v){
 
         //set up the control flags based on Global and Project settings
-        MainActivity myActivity = (MainActivity)getActivity();
+        MainActivity activity = (MainActivity)getActivity();
 
-        //int distUnits         = CCSettings.getDistUnits(myActivity);
-        boolean isDD          = CCSettings.isLocDD(myActivity);
-        boolean isPM          = CCSettings.isPM(myActivity);
+        //int distUnits         = CCSettings.getDistUnits(activity);
+        boolean isDD          = CCSettings.isLocDD(activity);
+        boolean isPM          = CCSettings.isPM(activity);
 
         //Raw GPS
         //Meaned WGS84
@@ -582,127 +726,6 @@ public class CoordinateMeasureFragment extends Fragment implements GpsStatus.Lis
         }
     }
 
-    private void wireDataSourceSpinner(View v){
-
-        //Create the array of spinner choices from the Types of Coordinates defined
-        String[] dataSourceTypes = new String[]{getString(R.string.select_data_source),
-                                                getString(R.string.manual_wgs_data_source),
-                                                getString(R.string.manual_spcs_data_source),
-                                                getString(R.string.manual_utm_data_source),
-                                                getString(R.string.phone_gps),
-                                                getString(R.string.external_gps),
-                                                getString(R.string.cell_tower_triangulation)};
-
-        //Then initialize the spinner itself
-        Spinner dataSourceSpinner = v.findViewById(R.id.data_source_spinner);
-
-        // Create an ArrayAdapter using the Activities context AND
-        // the string array and a default spinner layout
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(  getActivity(),
-                                                            android.R.layout.simple_spinner_item,
-                                                            dataSourceTypes);
-
-        // Specify the layout to use when the list of choices appears
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        // Apply the adapter to the spinner
-        dataSourceSpinner.setAdapter(adapter);
-
-        //attach the listener to the spinner
-        dataSourceSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                clearForm();
-                mCurDataSource = position;
-
-                int msg = 0;
-                switch(mCurDataSource){
-                    case CCSettings.sDataSourceNoneSelected:
-                        enableManualWgsInput(sDISABLE);
-                        enableManualSpcsInput(sDISABLE);
-                        enableManualUtmInput(sDISABLE);
-                        stopGps();
-                        msg = R.string.select_data_source;
-                        break;
-                    case CCSettings.sDataSourceWGSManual:
-                        msg = R.string.manual_wgs_data_source;
-                        enableManualWgsInput(sENABLE);
-                        enableManualSpcsInput(sDISABLE);
-                        enableManualUtmInput(sDISABLE);
-                        stopGps();
-
-                        break;
-                    case CCSettings.sDataSourceSPCSManual:
-                        msg = R.string.manual_spcs_data_source;
-                        enableManualWgsInput(sDISABLE);
-                        enableManualSpcsInput(sENABLE);
-                        enableManualUtmInput(sDISABLE);
-                        stopGps();
-
-                        break;
-                    case CCSettings.sDataSourceUTMManual:
-                        msg = R.string.manual_utm_data_source;
-                        enableManualWgsInput(sDISABLE);
-                        enableManualSpcsInput(sDISABLE);
-                        enableManualUtmInput(sENABLE);
-                        stopGps();
-
-                        break;
-                    case CCSettings.sDataSourcePhoneGps:
-                        // TODO: 6/22/2017 need to check that GPS is supported on this device
-                        initializeGPS();
-                        startGps();
-                        enableManualWgsInput(sDISABLE);
-                        enableManualSpcsInput(sDISABLE);
-                        enableManualUtmInput(sDISABLE);
-                        msg = R.string.phone_gps;
-
-                        break;
-                    case CCSettings.sDataSourceExternalGps:
-                        msg = R.string.external_gps;
-                        msg = R.string.external_gps_not_available;
-                        enableManualWgsInput(sDISABLE);
-                        enableManualSpcsInput(sDISABLE);
-                        enableManualUtmInput(sDISABLE);
-                        stopGps();
-                        break;
-                    case CCSettings.sDataSourceCellTowerTriangulation:
-                        msg = R.string.cell_tower_triangulation;
-                        msg = R.string.cell_tower_triangu_not_available;
-                        enableManualWgsInput(sDISABLE);
-                        enableManualSpcsInput(sDISABLE);
-                        enableManualUtmInput(sDISABLE);
-                        stopGps();
-
-                        break;
-                    default:
-                        enableManualWgsInput(sDISABLE);
-                        enableManualSpcsInput(sDISABLE);
-                        enableManualUtmInput(sDISABLE);
-                        stopGps();
-                        msg = R.string.select_data_source;
-                }
-
-                Utilities.getInstance().showStatus(getActivity(), msg);
-
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-                //for now, do nothing
-            }
-        });
-
-
-        //set default setting from the project
-
-        MainActivity activity = (MainActivity)getActivity();
-        if (activity != null) {
-            int dataSource = CCSettings.getDataSource(activity);
-            dataSourceSpinner.setSelection(dataSource);
-        }
-
-
-    }
 
     private void initializeUI(View v){
 
@@ -711,9 +734,6 @@ public class CoordinateMeasureFragment extends Fragment implements GpsStatus.Lis
 
         int zone = CCSettings.getZone(activity);
         updateSpcsZone(v, zone);
-
-        String distUnitString = CCSettings.getDistUnitString(activity);
-        updateDistUnits(v, distUnitString);
 
         TextView latitudeLabel        = v.findViewById(R.id.gpsWgs84LatitudeInputLabel);
         TextView longitudeLabel       = v.findViewById(R.id.gpsWgs84LongitudeInputLabel);
@@ -756,6 +776,22 @@ public class CoordinateMeasureFragment extends Fragment implements GpsStatus.Lis
         eastingLabel      .setText(getString(R.string.easting_label));
         spcNorthingLabel  .setText(getString(R.string.northing_label));
         spcEastingLabel   .setText(getString(R.string.easting_label));
+    }
+    private void initializeSpinners(View v) {
+        MainActivity activity = (MainActivity)getActivity();
+
+        //
+        // Spinners
+        //
+        Spinner distUnitsSpinner           = v.findViewById(R.id.distance_units_spinner);
+        Spinner dataSourceSpinner          = v.findViewById(R.id.data_source_spinner);
+
+        int position = CCSettings.getDistanceUnits(activity);
+        distUnitsSpinner.setSelection(position);
+
+        position = CCSettings.getDataSource(activity);
+        dataSourceSpinner.setSelection(position);
+
     }
 
     //******************************************************************//
@@ -815,9 +851,7 @@ public class CoordinateMeasureFragment extends Fragment implements GpsStatus.Lis
                     int numMean = CCSettings.getNumMean(activity);
                     if (numMean <= mMeanToken.getFixedReadings()){
                         completeMeanProcessing(mMeanToken, mNmeaData);
-                        if (CCSettings.isAutosave((MainActivity)getActivity())){
-                            //autoSave();
-                        }
+
                     }
                 }
             } else {
@@ -893,12 +927,15 @@ public class CoordinateMeasureFragment extends Fragment implements GpsStatus.Lis
     }
 
 
-    private int startMeaning(MeanToken token){
+    private int startMeaning(){
         //set flags to start taking mean
         initializeMeanToken();
-        token.setFirstPointInMean(true);
-        token.setMeanInProgress(true);
+        mMeanToken.setFirstPointInMean(true);
+        mMeanToken.setMeanInProgress(true);
         updateMeanProgressUI();
+
+        //Remove UI focus so screen will scroll
+        Utilities.getInstance().clearFocus(getActivity());
 
         return R.string.start_mean_button_label;
     }
@@ -920,9 +957,9 @@ public class CoordinateMeasureFragment extends Fragment implements GpsStatus.Lis
     //       Update UI with a coordinate                                //
     //******************************************************************//
 
-    private boolean updateNmeaUI(CoordinateWGS84 coordinateWGS84, NmeaSentence nmeaData){
+    private void updateNmeaUI(CoordinateWGS84 coordinateWGS84, NmeaSentence nmeaData){
         View v = getView();
-        if (v == null)return false;
+        if (v == null)return ;
 
         //Time
         TextView TimestampOutput = v.findViewById(R.id.gpsWgs84TimestampOutput);
@@ -930,7 +967,7 @@ public class CoordinateMeasureFragment extends Fragment implements GpsStatus.Lis
         String nmeaTimeString = String.format(Locale.getDefault(), "%.0f", nmeaData.getTime());
         //String wgsTimeString  = String.format(Locale.getDefault(), "%.0f", coordinateWGS84.getTime());
         //TimeOutput.setText(nmeaTimeString);
-                //todo fix time between nmea and coordinate WGS84
+                //Eventually fix time between nmea and coordinate WGS84
                 //setText(Double.toString(coordinateWGS84.getTime()));
                 //setText(Double.toString(nmeaData.getTime()));
 
@@ -941,12 +978,10 @@ public class CoordinateMeasureFragment extends Fragment implements GpsStatus.Lis
 
         updateWgsLocUI(coordinateWGS84);
 
-         return true;
     }
-
-    private boolean updateWgsUI(CoordinateWGS84 coordinateWGS84){
+    private void updateWgsUI(CoordinateWGS84 coordinateWGS84){
         View v = getView();
-        if (v == null)return false;
+        if (v == null)return ;
 
         //Time
         TextView TimestampOutput = v.findViewById(R.id.gpsWgs84TimestampOutput);
@@ -963,12 +998,11 @@ public class CoordinateMeasureFragment extends Fragment implements GpsStatus.Lis
 
 
         updateWgsLocUI(coordinateWGS84);
-        return true;
-    }
 
-    private boolean updateWgsLocUI(CoordinateWGS84 coordinateWGS84){
+    }
+    private void updateWgsLocUI(CoordinateWGS84 coordinateWGS84){
         View v = getView();
-        if (v == null)return false;
+        if (v == null)return ;
 
         mCurrentUIWGS84 = coordinateWGS84;
 
@@ -1021,30 +1055,26 @@ public class CoordinateMeasureFragment extends Fragment implements GpsStatus.Lis
         EditText ScaleFactorOutput      = v.findViewById(R.id.gpsWgs84ScaleFactor);
 
 
+        MainActivity activity = (MainActivity)getActivity();
+        boolean isDD = CCSettings.isLocDD(activity);
+        boolean isDir = CCSettings.isDir(activity);
 
-
-
-
-        MainActivity myActivity = (MainActivity)getActivity();
-        boolean isDD = CCSettings.isLocDD(myActivity);
-        boolean isDir = CCSettings.isDir(myActivity);
-
-        int locDigOfPrecision = CCSettings.getLocPrecision(myActivity);
+        int locDigOfPrecision = CCSettings.getLocPrecision(activity);
         if (isDD){
             double latitude  = coordinateWGS84.getLatitude();
             int posHemi = R.string.hemisphere_N;
             int negHemi = R.string.hemisphere_S;
-            Utilities.locDD(myActivity, latitude, locDigOfPrecision,
+            Utilities.locDD(activity, latitude, locDigOfPrecision,
                     isDir, posHemi, negHemi, latitudeDir, latitudeInput);
 
             double longitude = coordinateWGS84.getLongitude();
             posHemi = R.string.hemisphere_E;
             negHemi = R.string.hemisphere_W;
-            Utilities.locDD(myActivity, longitude, locDigOfPrecision,
+            Utilities.locDD(activity, longitude, locDigOfPrecision,
                     isDir, posHemi, negHemi, longitudeDir, longitudeInput);
 
             double convAngle = coordinateWGS84.getConvergenceAngle();
-            Utilities.caDD(myActivity, convAngle, locDigOfPrecision, ConvergenceAngleInput);
+            Utilities.caDD(activity, convAngle, locDigOfPrecision, ConvergenceAngleInput);
 
         } else {
             int deg = coordinateWGS84.getLatitudeDegree();
@@ -1054,7 +1084,7 @@ public class CoordinateMeasureFragment extends Fragment implements GpsStatus.Lis
             int posHemi = R.string.hemisphere_N;
             int negHemi = R.string.hemisphere_S;
 
-            Utilities.locDMS(myActivity, deg, min, sec, locDigOfPrecision,
+            Utilities.locDMS(activity, deg, min, sec, locDigOfPrecision,
                     isDir, posHemi, negHemi, latitudeDir,
                     latDegreesInput, latMinutesInput, latSecondsInput);
 
@@ -1064,16 +1094,16 @@ public class CoordinateMeasureFragment extends Fragment implements GpsStatus.Lis
             posHemi = R.string.hemisphere_E;
             negHemi = R.string.hemisphere_W;
 
-            Utilities.locDMS(myActivity, deg, min, sec, locDigOfPrecision,
+            Utilities.locDMS(activity, deg, min, sec, locDigOfPrecision,
                     isDir, posHemi, negHemi, longitudeDir,
                     longDegreesInput, longMinutesInput, longSecondsInput);
 
 
-            int caDegOfPrecision = CCSettings.getCAPrecision(myActivity);
+            int caDegOfPrecision = CCSettings.getCAPrecision(activity);
             deg = coordinateWGS84.getConvergenceAngleDegree();
             min = coordinateWGS84.getConvergenceAngleMinute();
             sec = coordinateWGS84.getConvergenceAngleSecond();
-            Utilities.caDMS(myActivity,deg, min, sec,
+            Utilities.caDMS(activity,deg, min, sec,
                               caDegOfPrecision,
                               CAdegInput, CAminInput, CAsecInput);
 
@@ -1086,21 +1116,20 @@ public class CoordinateMeasureFragment extends Fragment implements GpsStatus.Lis
         double elevation = coordinateWGS84.getElevation();
         double geoid     = coordinateWGS84.getGeoid();
 
-        Utilities.locDistance(myActivity, elevation, ElevationMetersInput);
-        Utilities.locDistance(myActivity, geoid, GeoidHeightMetersInput);
+        Utilities.locDistance(activity, elevation, ElevationMetersInput);
+        Utilities.locDistance(activity, geoid, GeoidHeightMetersInput);
 
-        int sfPrecision  = CCSettings.getSfPrecision(myActivity);
-        ScaleFactorOutput   .setText(truncatePrecisionString(sfPrecision, coordinateWGS84.getScaleFactor()));
+        int sfPrecision  = CCSettings.getSfPrecision(activity);
+        ScaleFactorOutput.
+                setText(truncatePrecisionString(sfPrecision, coordinateWGS84.getScaleFactor()));
 
-        return true;
+        Utilities.getInstance().clearFocus(activity);
+
     }
-
-    private boolean updateMeanUI(CoordinateMean meanCoordinate, MeanToken meanToken){
-
+    private void updateMeanUI(CoordinateMean meanCoordinate, MeanToken meanToken){
 
         View v = getView();
-        if (v == null)return false;
-
+        if (v == null)return ;
 
         //Mean Parameters
         TextView meanWgs84PointsInMeanOutput = v.findViewById(R.id.meanWgs84PointsInMeanOutput);
@@ -1149,11 +1178,6 @@ public class CoordinateMeasureFragment extends Fragment implements GpsStatus.Lis
         }
 
 
-        //Elevation
-        TextView meanWgs84ElevationMetersInput   = v.findViewById(
-                                                            R.id.meanWgs84ElevationMetersInput);
-         TextView meanWgs84GeoidHeightMetersInput = v.findViewById(
-                                                            R.id.meanWgs84GeoidHeightMetersInput);
 
         //Mean Standard Deviations
         TextView meanWgs84LatSigmaOutput = v.findViewById(R.id.meanWgs84LatSigmaOutput);
@@ -1180,30 +1204,30 @@ public class CoordinateMeasureFragment extends Fragment implements GpsStatus.Lis
         }
         meanWgs84EndTimestampOutput.setText(String.valueOf(endTimestampString));
 
-        MainActivity myActivity = (MainActivity)getActivity();
-        int locPrecision = CCSettings.getLocPrecision(myActivity);
-        int stdPrecision = CCSettings.getStdDevPrecision(myActivity);
+        MainActivity activity = (MainActivity)getActivity();
+        int locPrecision = CCSettings.getLocPrecision(activity);
+        int stdPrecision = CCSettings.getStdDevPrecision(activity);
 
         latitudeLabel         .setText(getString(R.string.latitude_label));
         longitudeLabel        .setText(getString(R.string.longitude_label));
 
 
 
-        boolean isDD = CCSettings.isLocDD(myActivity);
-        boolean isDir = CCSettings.isDir(myActivity);
+        boolean isDD = CCSettings.isLocDD(activity);
+        boolean isDir = CCSettings.isDir(activity);
 
-        int locDigOfPrecision = CCSettings.getLocPrecision(myActivity);
+        int locDigOfPrecision = CCSettings.getLocPrecision(activity);
         if (isDD){
             double latitude  = meanCoordinate.getLatitude();
             int posHemi = R.string.hemisphere_N;
             int negHemi = R.string.hemisphere_S;
-            Utilities.locDD(myActivity, latitude, locDigOfPrecision,
+            Utilities.locDD(activity, latitude, locDigOfPrecision,
                     isDir, posHemi, negHemi, latitudeDir, latitudeInput);
 
             double longitude = meanCoordinate.getLongitude();
             posHemi = R.string.hemisphere_E;
             negHemi = R.string.hemisphere_W;
-            Utilities.locDD(myActivity, longitude, locDigOfPrecision,
+            Utilities.locDD(activity, longitude, locDigOfPrecision,
                     isDir, posHemi, negHemi, longitudeDir, longitudeInput);
 
         } else {
@@ -1214,7 +1238,7 @@ public class CoordinateMeasureFragment extends Fragment implements GpsStatus.Lis
             int posHemi = R.string.hemisphere_N;
             int negHemi = R.string.hemisphere_S;
 
-            Utilities.locDMS(myActivity, deg, min, sec, locDigOfPrecision,
+            Utilities.locDMS(activity, deg, min, sec, locDigOfPrecision,
                     isDir, posHemi, negHemi, latitudeDir,
                     latDegreesInput, latMinutesInput, latSecondsInput);
 
@@ -1224,42 +1248,41 @@ public class CoordinateMeasureFragment extends Fragment implements GpsStatus.Lis
             posHemi = R.string.hemisphere_E;
             negHemi = R.string.hemisphere_W;
 
-            Utilities.locDMS(myActivity, deg, min, sec, locDigOfPrecision,
+            Utilities.locDMS(activity, deg, min, sec, locDigOfPrecision,
                     isDir, posHemi, negHemi, longitudeDir,
                     longDegreesInput, longMinutesInput, longSecondsInput);
 
         }
 
         //Elevation
-        TextView ElevationMetersInput   = v.findViewById(R.id.gpsWgs84ElevationMetersInput);
-        TextView GeoidHeightMetersInput = v.findViewById(R.id.gpsWgs84GeoidHeightMetersInput);
+        TextView ElevationMetersInput   = v.findViewById(R.id.meanWgs84ElevationMetersInput);
+        TextView GeoidHeightMetersInput = v.findViewById(R.id.meanWgs84GeoidHeightMetersInput);
 
         double elevation = meanCoordinate.getElevation();
         double geoid     = meanCoordinate.getGeoid();
 
-        Utilities.locDistance(myActivity, elevation, ElevationMetersInput);
-        Utilities.locDistance(myActivity, geoid, GeoidHeightMetersInput);
+        Utilities.locDistance(activity, elevation, ElevationMetersInput);
+        Utilities.locDistance(activity, geoid, GeoidHeightMetersInput);
 
 
 
-        meanWgs84LatSigmaOutput .setText(truncatePrecisionString(stdPrecision, meanCoordinate.getLatitudeStdDev()));
-        meanWgs84LongSigmaOutput.setText(truncatePrecisionString(stdPrecision, meanCoordinate.getLongitudeStdDev()));
-        meanWgs84ElevSigmaOutput.setText(truncatePrecisionString(stdPrecision, meanCoordinate.getElevationStdDev()));
+        meanWgs84LatSigmaOutput .
+                setText(truncatePrecisionString(stdPrecision, meanCoordinate.getLatitudeStdDev()));
+        meanWgs84LongSigmaOutput.
+                setText(truncatePrecisionString(stdPrecision, meanCoordinate.getLongitudeStdDev()));
+        meanWgs84ElevSigmaOutput.
+                setText(truncatePrecisionString(stdPrecision, meanCoordinate.getElevationStdDev()));
 
-
-        return true;
     }
-
-     private boolean updateUtmUI(CoordinateWGS84 coordinateWGS84){
+    private void updateUtmUI(CoordinateWGS84 coordinateWGS84){
         CoordinateUTM utmCoordinate = new CoordinateUTM(coordinateWGS84);
-        return updateUtmUI(utmCoordinate);
+        updateUtmUI(utmCoordinate);
     }
-
-    private boolean updateUtmUI(CoordinateUTM coordinateUTM){
+    private void updateUtmUI(CoordinateUTM coordinateUTM){
         View v = getView();
-        if (v == null  )return false;
+        if (v == null  )return ;
 
-        if (!coordinateUTM.isValidCoordinate()) return false;
+        if (!coordinateUTM.isValidCoordinate()) return ;
 
 
         TextView utmZoneOutput           = v.findViewById(R.id.utmZoneOutput);
@@ -1296,10 +1319,10 @@ public class CoordinateMeasureFragment extends Fragment implements GpsStatus.Lis
         TextView ScaleFactorInput       = v.findViewById(R.id.utmScaleFactor);
 
 
-        MainActivity myActivity = (MainActivity)getActivity();
-        boolean isDD = CCSettings.isLocDD(myActivity);
-        int locDigOfPrecision = CCSettings.getLocPrecision(myActivity);
-        int caDigOfPrecision  = CCSettings.getCAPrecision(myActivity);
+        MainActivity activity = (MainActivity)getActivity();
+        boolean isDD = CCSettings.isLocDD(activity);
+        int locDigOfPrecision = CCSettings.getLocPrecision(activity);
+        int caDigOfPrecision  = CCSettings.getCAPrecision(activity);
 
         //Also output the result in separate fields
         utmZoneOutput        .setText(String.valueOf(coordinateUTM.getZone()));
@@ -1309,43 +1332,39 @@ public class CoordinateMeasureFragment extends Fragment implements GpsStatus.Lis
         eastingLabel       .setText(getString(R.string.easting_label));
         northingLabel      .setText(getString(R.string.northing_label));
 
-        Utilities.locDistance(myActivity, coordinateUTM.getEasting(),  eastingMetersOutput);
-        Utilities.locDistance(myActivity, coordinateUTM.getNorthing(), northingMetersOutput);
+        Utilities.locDistance(activity, coordinateUTM.getEasting(),  eastingMetersOutput);
+        Utilities.locDistance(activity, coordinateUTM.getNorthing(), northingMetersOutput);
 
-        Utilities.locDistance(myActivity, coordinateUTM.getElevation(),utmElevationOutput);
-        Utilities.locDistance(myActivity, coordinateUTM.getGeoid(),     utmGeoidOutput);
+        Utilities.locDistance(activity, coordinateUTM.getElevation(),utmElevationOutput);
+        Utilities.locDistance(activity, coordinateUTM.getGeoid(),     utmGeoidOutput);
 
         if (isDD){
             double convAngle = coordinateUTM.getConvergenceAngle();
-            Utilities.caDD(myActivity, convAngle, caDigOfPrecision, ConvergenceAngleInput);
+            Utilities.caDD(activity, convAngle, caDigOfPrecision, ConvergenceAngleInput);
 
         } else {
 
             int deg = coordinateUTM.getConvergenceAngleDegree();
             int min = coordinateUTM.getConvergenceAngleMinute();
             double sec = coordinateUTM.getConvergenceAngleSecond();
-            Utilities.caDMS(myActivity,deg, min, sec, caDigOfPrecision,
+            Utilities.caDMS(activity,deg, min, sec, caDigOfPrecision,
                     CAdegInput, CAminInput, CAsecInput);
 
         }
 
-        int sfPrecision  = CCSettings.getSfPrecision(myActivity);
+        int sfPrecision  = CCSettings.getSfPrecision(activity);
         ScaleFactorInput .setText(truncatePrecisionString(sfPrecision, coordinateUTM.getScaleFactor()));
-        return true;
-
-
     }
-
-    private boolean updateSpcsUI(CoordinateWGS84 coordinateWgs){
+    private void updateSpcsUI(CoordinateWGS84 coordinateWgs){
         View v = getView();
-        if (v == null)return false;
+        if (v == null)return ;
         //need to ask for zone, then convert based on the zone
         TextView spcZoneInput = v.findViewById(R.id.spcZoneOutput);
         TextView spcStateOutput  = v.findViewById(R.id.spcStateOutput);
         String zoneString = spcZoneInput.getText().toString();
         if (Utilities.isEmpty(zoneString)){
             spcStateOutput.setText(getString(R.string.spc_zone_error));
-            return false;
+            return ;
         }
         int zone = Integer.valueOf(zoneString);
 
@@ -1356,15 +1375,14 @@ public class CoordinateMeasureFragment extends Fragment implements GpsStatus.Lis
             clearSpcUI(v);
             spcZoneInput  .setText(String.valueOf(coordinateSPCS.getZone()));
             spcStateOutput.setText(getString(R.string.spc_zone_error));
-            return false;
+            return ;
         }
 
-        return updateSpcsUI(coordinateSPCS);
+        updateSpcsUI(coordinateSPCS);
     }
-
-    private boolean updateSpcsUI(CoordinateSPCS coordinateSPCS){
+    private void updateSpcsUI(CoordinateSPCS coordinateSPCS){
         View v = getView();
-        if (v == null)return false;
+        if (v == null)return ;
 
 
         TextView spcZoneInput            = v.findViewById(R.id.spcZoneOutput);
@@ -1433,10 +1451,7 @@ public class CoordinateMeasureFragment extends Fragment implements GpsStatus.Lis
         }
 
         ScaleFactorInput .setText(truncatePrecisionString(sfPrecision, coordinateSPCS.getScaleFactor()));
-        return true;
     }
-
-
 
     private void updateGpsUI(boolean isGpsOn) {
         View v = getView();
@@ -1452,7 +1467,6 @@ public class CoordinateMeasureFragment extends Fragment implements GpsStatus.Lis
         }
         gpsOnOffOutput.setText(getString(message));
 
-        return ;
     }
 
     private void initializeMeanProgressUI(View v) {
@@ -1468,7 +1482,6 @@ public class CoordinateMeasureFragment extends Fragment implements GpsStatus.Lis
         meanOnOffOutput.setText(getString(message));
 
     }
-
     private void updateMeanProgressUI() {
         View v = getView();
         if (v == null) return ;
@@ -1505,21 +1518,11 @@ public class CoordinateMeasureFragment extends Fragment implements GpsStatus.Lis
 
     }
 
-    private void updateDistUnits(View v, String distUnitString){
-
-        //need to ask for zone, then convert based on the zone
-        TextView distUnitsOutput = v.findViewById(R.id.measureDistanceUnitsInput);
-        distUnitsOutput.setText(distUnitString);
-
-    }
-
 
     //truncate digits of precision
     private String truncatePrecisionString(int digitsOfPrecision, double reading) {
        return Utilities.truncatePrecisionString(reading, digitsOfPrecision);
     }
-
-
 
 
     //******************************************************************//
@@ -1532,7 +1535,7 @@ public class CoordinateMeasureFragment extends Fragment implements GpsStatus.Lis
         if (v == null)return R.string.convert_error_ui;
 
 
-        CoordinateWGS84 coordinateWGS84 = null;
+        CoordinateWGS84 coordinateWGS84;
         switch(mCurDataSource){
 
             case CCSettings.sDataSourceWGSManual:
@@ -1564,7 +1567,7 @@ public class CoordinateMeasureFragment extends Fragment implements GpsStatus.Lis
                     return R.string.convert_error_source;
                 }
                 coordinateWGS84 = new CoordinateWGS84(coordinateSPCS);
-                if ((coordinateWGS84 == null) || !coordinateWGS84.isValidCoordinate()){
+                if ( !coordinateWGS84.isValidCoordinate()){
                     return R.string.convert_failed;
                 }
 
@@ -1645,18 +1648,23 @@ public class CoordinateMeasureFragment extends Fragment implements GpsStatus.Lis
     }
 
     private CoordinateWGS84 addOffsetsToCoordinate(CoordinateWGS84 coordinateWGS84){
+        MainActivity activity = (MainActivity)getActivity();
+        if (activity == null)return null;
 
-        double offsetDistance  = mPointBeingMaintained.getOffsetDistance();
-        double offsetHeading   = mPointBeingMaintained.getOffsetHeading();
-        double offsetElevation = mPointBeingMaintained.getOffsetElevation();
+        // TODO: 1/7/2018 This is not being calculated properly
+        double offsetDistance  = CCSettings.getDistanceOffset (activity);
+        double offsetHeading   = CCSettings.getHeadingOffset  (activity);
+        double offsetElevation = CCSettings.getElevationOffset(activity);
 
         //calculate the location using the offset
-        // TODO: 1/5/2018 Figure out how to add these classes
-        /*
+
         LatLng fromLocation = new LatLng(coordinateWGS84.getLatitude(), coordinateWGS84.getLongitude());
         LatLng toLocation = SphericalUtil.computeOffset(fromLocation, offsetDistance, offsetHeading);
-*/
+
         double newElevation = coordinateWGS84.getElevation() + offsetElevation;
+
+        coordinateWGS84.setLatitude(toLocation.latitude);
+        coordinateWGS84.setLongitude(toLocation.longitude);
         coordinateWGS84.setElevation(newElevation);
         return coordinateWGS84;
 
@@ -1678,7 +1686,6 @@ public class CoordinateMeasureFragment extends Fragment implements GpsStatus.Lis
         }
         return coordinateWGS84;
     }
-
     private CoordinateWGS84 convertWgsInputs() {
         View v = getView();
         if (v == null)return null;
@@ -1745,8 +1752,7 @@ public class CoordinateMeasureFragment extends Fragment implements GpsStatus.Lis
         }
         return coordinateWGS84;
     }
-
-    private CoordinateSPCS convertSpcsInputs() {
+    private CoordinateSPCS  convertSpcsInputs() {
         View v = getView();
         if (v == null)return null;
 
@@ -1806,8 +1812,7 @@ public class CoordinateMeasureFragment extends Fragment implements GpsStatus.Lis
         }
         return coordinateSPCS;
     }
-
-    private CoordinateUTM convertUtmInputs() {
+    private CoordinateUTM   convertUtmInputs() {
         View v = getView();
         if (v == null)return null;
 
@@ -1850,8 +1855,6 @@ public class CoordinateMeasureFragment extends Fragment implements GpsStatus.Lis
 
         return coordinateUTM;
     }
-
-
 
     //******************************************************************//
     //            Screen UI stuff                                       //
@@ -2065,7 +2068,6 @@ public class CoordinateMeasureFragment extends Fragment implements GpsStatus.Lis
         ScaleFactorOutput.setText("");
 
     }
-
     private void clearMeanUI(View v){
 
         mMeanToken = null;
@@ -2127,7 +2129,6 @@ public class CoordinateMeasureFragment extends Fragment implements GpsStatus.Lis
 
 
     }
-
     private void clearUtmUI(View v){
         TextView utmZoneOutput           = v.findViewById(R.id.utmZoneOutput);
 
@@ -2169,7 +2170,6 @@ public class CoordinateMeasureFragment extends Fragment implements GpsStatus.Lis
         ScaleFactorOutput.   setText("");
 
     }
-
     private void clearSpcUIxZone(View v) {
         TextView spcZoneOutput = v.findViewById(R.id.spcZoneOutput);
         TextView spcStateOutput = v.findViewById(R.id.spcStateOutput);
@@ -2324,7 +2324,6 @@ public class CoordinateMeasureFragment extends Fragment implements GpsStatus.Lis
         ScaleFactorInput     .setTextColor(ContextCompat.getColor(getActivity(),uiColor));
 
     }
-
     private void setColor(CoordinateSPCS coordinateSPCS){
         View v = getView();
         if (v == null)return;
@@ -2411,7 +2410,6 @@ public class CoordinateMeasureFragment extends Fragment implements GpsStatus.Lis
         ScaleFactorInput.setTextColor(ContextCompat.getColor(getActivity(), uiColor));
 
     }
-
     private void setColor(CoordinateUTM coordinateUTM){
         View v = getView();
         if (v == null)return;
@@ -2512,8 +2510,15 @@ public class CoordinateMeasureFragment extends Fragment implements GpsStatus.Lis
 
     }
 
+    private boolean isGPSEnabled() {
+        MainActivity activity = (MainActivity) getActivity();
+        if (activity == null) return false;
 
-    private void startGps(){
+        LocationManager lm = (LocationManager) activity.getSystemService(Context.LOCATION_SERVICE);
+        return ((lm != null) && (lm.isProviderEnabled(LocationManager.GPS_PROVIDER)));
+
+    }
+    private void    startGps(){
 
         // TODO: 6/23/2017 Show gps status on UI
         if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION)
@@ -2532,8 +2537,7 @@ public class CoordinateMeasureFragment extends Fragment implements GpsStatus.Lis
         isGpsOn = true;
         updateGpsUI(isGpsOn);
     }
-
-    private void stopGps() {
+    private void    stopGps() {
         if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED ||
                 ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)
