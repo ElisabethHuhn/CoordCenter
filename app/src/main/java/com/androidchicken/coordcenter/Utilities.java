@@ -2,18 +2,24 @@ package com.androidchicken.coordcenter;
 
 import android.app.Activity;
 import android.content.Context;
+import android.location.LocationManager;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -131,7 +137,7 @@ public class Utilities {
         return feet / Utilities.feetPerMeter;
     }
 
-    static double convertIFeetMeters(double iFeet) {
+    static double convertIFeetToMeters(double iFeet) {
         //function converts IFeet to Meters.
         return iFeet / Utilities.ifeetPerMeter;
     }
@@ -322,7 +328,7 @@ public class Utilities {
             distanceMeters = Utilities.convertFeetToMeters(distanceValue);
         }
         if (distUnits == CCSettings.sIntFeet){
-            distanceMeters = Utilities.convertIFeetMeters(distanceValue);
+            distanceMeters = Utilities.convertIFeetToMeters(distanceValue);
         }
 
         return Utilities.truncatePrecisionString(distanceMeters, digitsOfPrecision);
@@ -520,10 +526,316 @@ public class Utilities {
 
 
     //***********************************/
-    //******** Setters/Getters  *********/
+    //********     Offsets      *********/
     //***********************************/
+    void    wireOffsets      (MainActivity activity, View v){
+
+        if (activity == null)return;
+        final MainActivity myActivity = activity;
+        final View         view = v;
 
 
+        //Define the watchers and listeners
+        TextWatcher offsetTextWatcher = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence offset, int start, int count, int after) {
+                //This tells you that text is about to change.
+                // Starting at character "start", the next "count" characters
+                // will be changed with "after" number of characters
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence offset, int start, int before, int count) {
+                //This tells you where the text has changed
+                //Starting at character "start", the "before" number of characters
+                // has been replaced with "count" number of characters
+                if (!saveOffsets(myActivity, view)) {
+                    errorHandler(myActivity, R.string.error_saving_offsets);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable offset) {
+                //This tells you that somewhere within editable, it's text has changed
+                int temp = 0;
+                temp++;
+
+
+            }
+        };
+        TextWatcher headingOffsetTextWatcher = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence heading, int start, int count, int after) {
+                //This tells you that text is about to change.
+                // Starting at character "start", the next "count" characters
+                // will be changed with "after" number of characters
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence headingString, int start, int before, int count) {
+                //This tells you where the text has changed
+                //Starting at character "start", the "before" number of characters
+                // has been replaced with "count" number of characters
+
+                if (Utilities.isEmpty(headingString)) {
+                    CCSettings.setHeadingOffset(myActivity, CCSettings.sHeadingOffsetDefault);
+                } else {
+                    //  do a check on value
+                    double heading = Double.valueOf(headingString.toString().trim());
+                    if ((heading >= 0) && (heading <= 360)) {
+                        if (!saveOffsets(myActivity, view)) {
+                            errorHandler(myActivity,
+                                                                 R.string.error_saving_offsets);
+                        }
+                    } else {
+                        showStatus(myActivity, R.string.heading_invalid);
+                    }
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable heading) {
+                //This tells you that somewhere within editable, it's text has changed
+
+            }
+        };
+
+        View.OnFocusChangeListener changeListener = new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus){
+                    if (!saveOffsets(myActivity, view)) {
+                        errorHandler(myActivity, R.string.error_saving_offsets);
+                    }
+                }
+            }
+        };
+
+
+        final EditText distanceOffsetView   = v.findViewById(R.id.offsetDistanceInput);
+        final EditText headingOffsetView    = v.findViewById(R.id.offsetHeadingInput);
+        final EditText elevationOffsetView  = v.findViewById(R.id.offsetElevationInput);
+
+
+        distanceOffsetView .addTextChangedListener(offsetTextWatcher);
+        headingOffsetView  .addTextChangedListener(headingOffsetTextWatcher);
+        elevationOffsetView.addTextChangedListener(offsetTextWatcher);
+
+        distanceOffsetView .setOnFocusChangeListener(changeListener);
+        headingOffsetView  .setOnFocusChangeListener(changeListener);
+        elevationOffsetView.setOnFocusChangeListener(changeListener);
+
+        distanceOffsetView .setEnabled(true);
+        headingOffsetView  .setEnabled(true);
+        elevationOffsetView.setEnabled(true);
+    }
+    void    initializeOffsets(MainActivity activity, View v) {
+
+
+        //
+        // Offset Inputs
+        //
+
+        final EditText distanceOffsetView   = v.findViewById(R.id.offsetDistanceInput);
+        final EditText headingOffsetView    = v.findViewById(R.id.offsetHeadingInput);
+        final EditText elevationOffsetView  = v.findViewById(R.id.offsetElevationInput);
+
+        double offset = CCSettings.getDistanceOffset(activity);
+        String offsetString = String.valueOf(offset);
+        distanceOffsetView.setText(offsetString);
+
+        offset = CCSettings.getHeadingOffset(activity);
+        offsetString = String.valueOf(offset);
+        headingOffsetView.setText(offsetString);
+
+        offset = CCSettings.getElevationOffset(activity);
+        offsetString = String.valueOf(offset);
+        elevationOffsetView.setText(offsetString);
+    }
+    boolean saveOffsets      (MainActivity activity, View v){
+
+        if ((activity == null) || (v == null))return false;
+
+
+        final EditText distanceOffsetView   = v.findViewById(R.id.offsetDistanceInput);
+        final EditText headingOffsetView    = v.findViewById(R.id.offsetHeadingInput);
+        final EditText elevationOffsetView  = v.findViewById(R.id.offsetElevationInput);
+
+
+        String offsetString = distanceOffsetView.getText().toString().trim();
+        if (!Utilities.isEmpty(offsetString)) {
+            CCSettings.setDistanceOffset(activity, Double.valueOf(offsetString));
+        } else {
+            CCSettings.setDistanceOffset(activity, CCSettings.sDistanceOffsetDefault);
+        }
+
+        offsetString = headingOffsetView.getText().toString().trim();
+        if (!Utilities.isEmpty(offsetString)) {
+            CCSettings.setHeadingOffset(activity, Double.valueOf(offsetString));
+        } else {
+            CCSettings.setHeadingOffset(activity, CCSettings.sHeadingOffsetDefault);
+        }
+
+        offsetString = elevationOffsetView.getText().toString().trim();
+        if (!Utilities.isEmpty(offsetString)) {
+            CCSettings.setElevationOffset(activity, Double.valueOf(offsetString));
+        } else {
+            CCSettings.setElevationOffset(activity, CCSettings.sElevationOffsetDefault);
+        }
+        return true;
+    }
+
+    //***********************************/
+    //********     Spinners     *********/
+    //***********************************/
+    void wireSpinners(final MainActivity activity, View v){
+        if ((activity == null) || (v == null))return;
+        final MainActivity myActivity = activity;
+
+        //Create the array of spinner choices from the Types of Coordinates defined
+        //The order of these is used when an item is selected, so if you change these,
+        // change the item selected listener as well
+        String [] distanceUnits = new String[]{ CCSettings.sMetersString,
+                                                CCSettings.sFeetString,
+                                                CCSettings.sIntFeetString};
+
+        String [] dataSourceTypes = new String[]{
+                                            activity.getString(R.string.select_data_source),
+                                            activity.getString(R.string.manual_wgs_data_source),
+                                            activity.getString(R.string.manual_spcs_data_source),
+                                            activity.getString(R.string.manual_utm_data_source),
+                                            activity.getString(R.string.phone_gps),
+                                            activity.getString(R.string.external_gps),
+                                            activity.getString(R.string.cell_tower_triangulation)};
+
+
+        //Then initialize the spinner itself
+
+        Spinner distUnitsSpinner           = v.findViewById(R.id.distance_units_spinner);
+        Spinner dataSourceSpinner          = v.findViewById(R.id.data_source_spinner);
+
+        // Create the ArrayAdapters using the Activities context AND
+        // the string array and a default spinner layout
+        ArrayAdapter<String> duAdapter = new ArrayAdapter<>(activity,
+                                                            android.R.layout.simple_spinner_item,
+                                                            distanceUnits);
+
+
+        ArrayAdapter<String> dsAdapter = new ArrayAdapter<>(activity,
+                                                            android.R.layout.simple_spinner_item,
+                                                            dataSourceTypes);
+
+
+        // Specify the layout to use when the list of choices appears
+        duAdapter .setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        dsAdapter .setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        // Apply the adapter to the spinner
+        distUnitsSpinner    .setAdapter(duAdapter);
+        dataSourceSpinner   .setAdapter(dsAdapter);
+
+        //attach the listener to the spinner
+        distUnitsSpinner .setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                //reset the new value
+
+                if (myActivity != null) {
+                    //Based on the order presented to the user,
+                    // which should be in the same order as the constants: Settings.sMeter, etc
+
+                    CCSettings.setDistUnits(myActivity, position);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+        dataSourceSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+                int msg;
+
+                switch(position){
+                    case CCSettings.sDataSourceNoneSelected:
+
+                        msg = R.string.select_data_source;
+                        break;
+                    case CCSettings.sDataSourceWGSManual:
+                        msg = R.string.manual_wgs_data_source;
+
+                        break;
+                    case CCSettings.sDataSourceSPCSManual:
+                        msg = R.string.manual_spcs_data_source;
+                        break;
+                    case CCSettings.sDataSourceUTMManual:
+                        msg = R.string.manual_utm_data_source;
+                        break;
+                    case CCSettings.sDataSourcePhoneGps:
+
+                        if (isGPSEnabled(myActivity)) {
+                            msg = R.string.phone_gps;
+                        } else {
+                            msg = R.string.phone_gps_not_available;
+                        }
+
+                        break;
+                    case CCSettings.sDataSourceExternalGps:
+                        //msg = R.string.external_gps;
+                        msg = R.string.external_gps_not_available;
+                        break;
+                    case CCSettings.sDataSourceCellTowerTriangulation:
+                        //msg = R.string.cell_tower_triangulation;
+                        msg = R.string.cell_tower_triangu_not_available;
+                        break;
+                    default:
+                        msg = R.string.select_data_source;
+                }
+
+                String selectMsg = myActivity.getString(R.string.selected_data_source,
+                                                        myActivity.getString(msg) );
+
+                showStatus(activity, selectMsg);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                //for now, do nothing
+            }
+        });
+
+    }
+    void initializeSpinners(MainActivity activity, View v) {
+
+        //
+        // Spinners
+        //
+        Spinner distUnitsSpinner           = v.findViewById(R.id.distance_units_spinner);
+        Spinner dataSourceSpinner          = v.findViewById(R.id.data_source_spinner);
+
+        int position = CCSettings.getDistanceUnits(activity);
+        distUnitsSpinner.setSelection(position);
+
+        position = CCSettings.getDataSource(activity);
+        dataSourceSpinner.setSelection(position);
+
+    }
+
+
+
+    private boolean isGPSEnabled(MainActivity activity) {
+
+        if (activity == null) return false;
+
+        LocationManager lm = (LocationManager) activity.getSystemService(Context.LOCATION_SERVICE);
+        return ((lm != null) && (lm.isProviderEnabled(LocationManager.GPS_PROVIDER)));
+
+    }
 
 
     //***********************************/
@@ -630,6 +942,8 @@ public class Utilities {
             }
         }
     }
+
+
 
 
 }

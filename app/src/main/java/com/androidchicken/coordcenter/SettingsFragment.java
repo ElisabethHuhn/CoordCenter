@@ -1,8 +1,5 @@
 package com.androidchicken.coordcenter;
 
-import android.content.Context;
-import android.graphics.Color;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.SwitchCompat;
@@ -11,12 +8,9 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 /**
@@ -26,7 +20,7 @@ import android.widget.TextView;
  * Created by Elisabeth Huhn on 7/29/17 for GeoBot.
  * Cloned on 1/3/2018 For CoordCenter
  */
-public class SettingsFragment extends Fragment implements CompoundButton.OnCheckedChangeListener{
+public class SettingsFragment extends Fragment {
 
     //private static final String TAG = "GENERAL_SETTINGS_FRAGMENT";
 
@@ -49,23 +43,21 @@ public class SettingsFragment extends Fragment implements CompoundButton.OnCheck
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+        MainActivity activity = (MainActivity)getActivity();
+        if (activity == null) return null;
+
         //Inflate the layout for this fragment
         View v = inflater.inflate( R.layout.fragment_settings, container,  false);
 
         wireWidgets(v);
-        wireSpinners(v);
+        Utilities.getInstance().wireSpinners(activity, v);
 
         initializeUI(v);
+        Utilities.getInstance().initializeSpinners(activity, v);
 
-        MainActivity activity = (MainActivity)getActivity();
-        if (activity != null) {
-            //get rid of the soft keyboard if it is visible
-
-            EditText aboutWho = v.findViewById(R.id.settingsSpcZoneInput);
-            Utilities.getInstance().showSoftKeyboard(activity, aboutWho);
-            //Utilities.getInstance().hideSoftKeyboard(activity);
-            //Utilities.getInstance().hideKeyboard(activity);
-        }
+        //get rid of the soft keyboard if it is visible
+        EditText aboutWho = v.findViewById(R.id.settingsSpcZoneInput);
+        Utilities.getInstance().showSoftKeyboard(activity, aboutWho);
 
         return v;
     }
@@ -78,14 +70,7 @@ public class SettingsFragment extends Fragment implements CompoundButton.OnCheck
 
     }
 
-    @Override
-    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-        if (isChecked) {
-            enableSaveButton();
-        } else {
-            enableSaveButton();
-        }
-    }
+
     //**********************************************************/
     //****     Initialize                                *******/
     //**********************************************************/
@@ -105,7 +90,7 @@ public class SettingsFragment extends Fragment implements CompoundButton.OnCheck
         wirePrecisions(v);
         wireHeightMean(v);
         wireZone(v);
-        wireOffsets(v);
+        Utilities.getInstance().wireOffsets(activity, v);
     }
     private void wireSwitches(View v){
         final MainActivity activity = (MainActivity)getActivity();
@@ -191,6 +176,8 @@ public class SettingsFragment extends Fragment implements CompoundButton.OnCheck
         final MainActivity activity = (MainActivity)getActivity();
         if (activity == null)return;
 
+        final View view = v;
+
         TextWatcher precisionTextWatcher = new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {
@@ -206,13 +193,27 @@ public class SettingsFragment extends Fragment implements CompoundButton.OnCheck
                 //Starting at character "start", the "before" number of characters
                 // has been replaced with "count" number of characters
 
-                if (!savePrecisions()) enableSaveButton();
+                if (!savePrecisions()) {
+                    Utilities.getInstance().errorHandler(activity, R.string.error_saving_offsets);
+                }
             }
 
             @Override
             public void afterTextChanged(Editable editable) {
                 //This tells you that somewhere within editable, it's text has changed
 
+            }
+        };
+        View.OnFocusChangeListener changeListener = new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+            if (!hasFocus){
+                //loosing focus, save
+                if (!savePrecisions()) {
+                    Utilities.getInstance().errorHandler(activity,
+                                                         R.string.error_saving_precisions);
+                }
+            }
             }
         };
 
@@ -226,196 +227,16 @@ public class SettingsFragment extends Fragment implements CompoundButton.OnCheck
         sfPrecisionView .addTextChangedListener(precisionTextWatcher);
         caPrecisionView .addTextChangedListener(precisionTextWatcher);
 
-
-
-        locPrecisionView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus){
-                    enableSaveButton();
-                } else {
-                    String precisionString = locPrecisionView.getText().toString().trim();
-                    if (!Utilities.isEmpty(precisionString)) {
-                        CCSettings.setLocPrecision(activity, Integer.valueOf(precisionString));
-                    } else {
-                        CCSettings.setLocPrecision(activity, CCSettings.sLocPrcDefault);
-                    }
-                    disableSaveButton();
-                }
-            }
-        });
-
-        stdPrecisionView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus){
-                    enableSaveButton();
-                } else {
-                    String precisionString = stdPrecisionView.getText().toString().trim();
-                    if (!Utilities.isEmpty(precisionString)) {
-                        CCSettings.setStdDevPrecision(activity, Integer.valueOf(precisionString));
-                    } else {
-                        CCSettings.setStdDevPrecision(activity, CCSettings.sStdPrcDefault);
-                    }
-                    disableSaveButton();
-                }
-            }
-        });
-
-
-        sfPrecisionView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus) {
-                    enableSaveButton();
-                } else {
-                    String precisionString = sfPrecisionView.getText().toString().trim();
-                    if (!Utilities.isEmpty(precisionString)) {
-                        CCSettings.setSfPrecision(activity, Integer.valueOf(precisionString));
-                    } else {
-                        CCSettings.setSfPrecision(activity, CCSettings.sSfPrcDefault);
-                    }
-                    disableSaveButton();
-
-                }
-            }
-        });
-        caPrecisionView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus) {
-                    enableSaveButton();
-                } else {
-                    String precisionString = caPrecisionView.getText().toString().trim();
-                    if (!Utilities.isEmpty(precisionString)) {
-                        CCSettings.setCAPrecision(activity, Integer.valueOf(precisionString));
-                    } else {
-                        CCSettings.setCAPrecision(activity, CCSettings.sCAPrcDefault);
-                    }
-                    disableSaveButton();
-
-                }
-            }
-        });
-
+        locPrecisionView.setOnFocusChangeListener(changeListener);
+        stdPrecisionView.setOnFocusChangeListener(changeListener);
+        sfPrecisionView .setOnFocusChangeListener(changeListener);
+        caPrecisionView .setOnFocusChangeListener(changeListener);
 
         locPrecisionView.setEnabled(true);
         stdPrecisionView.setEnabled(true);
         sfPrecisionView.setEnabled(true);
         caPrecisionView.setEnabled(true);
 
-    }
-    private void wireOffsets(View v){
-        final MainActivity activity = (MainActivity)getActivity();
-        if (activity == null)return;
-
-        TextWatcher offsetTextWatcher = new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence offset, int start, int count, int after) {
-                //This tells you that text is about to change.
-                // Starting at character "start", the next "count" characters
-                // will be changed with "after" number of characters
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence offset, int start, int before, int count) {
-                //This tells you where the text has changed
-                //Starting at character "start", the "before" number of characters
-                // has been replaced with "count" number of characters
-                if (!saveOffsets()) enableSaveButton();
-            }
-
-            @Override
-            public void afterTextChanged(Editable offset) {
-                //This tells you that somewhere within editable, it's text has changed
-                int temp = 0;
-                temp++;
-
-
-            }
-        };
-        TextWatcher headingOffsetTextWatcher = new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence heading, int start, int count, int after) {
-                //This tells you that text is about to change.
-                // Starting at character "start", the next "count" characters
-                // will be changed with "after" number of characters
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence headingString, int start, int before, int count) {
-                //This tells you where the text has changed
-                //Starting at character "start", the "before" number of characters
-                // has been replaced with "count" number of characters
-
-                if (Utilities.isEmpty(headingString)) {
-                    CCSettings.setHeadingOffset(activity, CCSettings.sHeadingOffsetDefault);
-                } else {
-                    //  do a check on value
-                    double heading = Double.valueOf(headingString.toString().trim());
-                    if ((heading >= 0) && (heading <= 360)) {
-                        if (!saveOffsets()) enableSaveButton();
-                    } else {
-                        Utilities.getInstance().showStatus(activity, R.string.heading_invalid);
-                    }
-                }
-            }
-
-            @Override
-            public void afterTextChanged(Editable heading) {
-                //This tells you that somewhere within editable, it's text has changed
-
-            }
-        };
-
-        final EditText distanceOffsetView   = v.findViewById(R.id.offsetDistanceInput);
-        final EditText headingOffsetView    = v.findViewById(R.id.offsetHeadingInput);
-        final EditText elevationOffsetView  = v.findViewById(R.id.offsetElevationInput);
-
-
-        distanceOffsetView .addTextChangedListener(offsetTextWatcher);
-        headingOffsetView  .addTextChangedListener(headingOffsetTextWatcher);
-        elevationOffsetView.addTextChangedListener(offsetTextWatcher);
-
-
-
-
-        distanceOffsetView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus){
-                    saveOffsets();
-                }
-            }
-        });
-
-
-        headingOffsetView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus){
-                    saveOffsets();
-                }
-            }
-        });
-
-
-        elevationOffsetView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus){
-                    saveOffsets();
-                }
-            }
-        });
-
-
-
-        distanceOffsetView.setEnabled(true);
-        headingOffsetView.setEnabled(true);
-        elevationOffsetView.setEnabled(true);
     }
     private void wireHeightMean(View v){
         final MainActivity activity = (MainActivity)getActivity();
@@ -437,13 +258,26 @@ public class SettingsFragment extends Fragment implements CompoundButton.OnCheck
                 //Starting at character "start", the "before" number of characters
                 // has been replaced with "count" number of characters
 
-                if (!saveHeightMean()) enableSaveButton();
+                if (!saveHeightMean()) {
+                    Utilities.getInstance().errorHandler(activity, R.string.error_saving_height);
+                }
             }
 
             @Override
             public void afterTextChanged(Editable editable) {
                 //This tells you that somewhere within editable, it's text has changed
 
+            }
+        };
+        View.OnFocusChangeListener changeListener = new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean hasFocus) {
+                if (!hasFocus){
+                    if (!saveHeightMean()) {
+                        Utilities.getInstance().errorHandler(activity,
+                                                             R.string.error_saving_height);
+                    }
+                }
             }
         };
 
@@ -451,74 +285,19 @@ public class SettingsFragment extends Fragment implements CompoundButton.OnCheck
         final EditText heightView  = v.findViewById(R.id.settingsHeightOutput);
         final EditText maxMeanView = v.findViewById(R.id.settingsNumMeanOutput);
 
-        heightView.addTextChangedListener(heightMeanTextWatcher);
+        heightView .addTextChangedListener(heightMeanTextWatcher);
         maxMeanView.addTextChangedListener(heightMeanTextWatcher);
 
-        heightView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View view, boolean hasFocus) {
-                if (hasFocus){
-                    //focus has shifted to height
-                    enableSaveButton();
-                } else {
-                    //focus has shifted away from height
-                    String heightString = heightView.getText().toString().trim();
-                    if (!Utilities.isEmpty(heightString)) {
-                        CCSettings.setHeight(activity, Double.valueOf(heightString));
-                    } else {
-                        CCSettings.setHeight(activity, CCSettings.sHeightDefault);
-                    }
-                    disableSaveButton();
-                }
-            }
-        });
-
-
-        maxMeanView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View view, boolean hasFocus) {
-                if (hasFocus){
-                    //focus has shifted to maxMean
-                    enableSaveButton();
-                } else {
-                    //focus has shifted away from maxMean
-                    String maxMeanString = maxMeanView.getText().toString().trim();
-                    if (!Utilities.isEmpty(maxMeanString)){
-                        CCSettings.setNumMean(activity, Integer.valueOf(maxMeanString));
-                    } else {
-                        CCSettings.setNumMean(activity, CCSettings.sNumMeanDefault);
-                    }
-                    disableSaveButton();
-                }
-            }
-        });
+        heightView .setOnFocusChangeListener(changeListener);
+        maxMeanView.setOnFocusChangeListener(changeListener);
     }
     private void wireZone(View v){
         final MainActivity activity = (MainActivity)getActivity();
         if (activity == null)return;
 
-
-        final EditText zoneView    = v.findViewById(R.id.settingsSpcZoneInput);
-        final View fragmentView = v;
-        zoneView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View view, boolean hasFocus) {
-                if (!hasFocus) {
-                    //focus has shifted away from zone
-
-                    String zoneString = zoneView.getText().toString().trim();
-                    int zone = 0;  //if the string is invalid, use an invalid zone
-                    if (!Utilities.isEmpty(zoneString)) {
-                        zone = Integer.valueOf(zoneString);
-                    }
-                    updateStateUI(activity, fragmentView, zone);
-                    disableSaveButton();
-                }
-            }
-        });
         TextWatcher zoneTextWatcher = new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {
+            public void beforeTextChanged(CharSequence zone, int start, int count, int after) {
                 //This tells you that text is about to change.
                 // Starting at character "start", the next "count" characters
                 // will be changed with "after" number of characters
@@ -526,148 +305,37 @@ public class SettingsFragment extends Fragment implements CompoundButton.OnCheck
             }
 
             @Override
-            public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
+            public void onTextChanged(CharSequence zone, int start, int before, int count) {
                 //This tells you where the text has changed
                 //Starting at character "start", the "before" number of characters
                 // has been replaced with "count" number of characters
-                if (!updateZoneState(charSequence)) enableSaveButton();
+                if (!updateZoneState(zone)) {
+                    Utilities.getInstance().errorHandler(activity, R.string.error_updating_zone);
+                }
             }
 
             @Override
-            public void afterTextChanged(Editable editable) {
+            public void afterTextChanged(Editable zon) {
                 //This tells you that somewhere within editable, it's text has changed
 
             }
         };
+        View.OnFocusChangeListener changeListener = new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean hasFocus) {
+                if (!hasFocus){
+                    if (!saveZone()) {
+                        Utilities.getInstance().errorHandler(activity, R.string.error_saving_zone);
+                    }
+                }
+            }
+        };
 
+        final EditText zoneView    = v.findViewById(R.id.settingsSpcZoneInput);
+        zoneView.setOnFocusChangeListener(changeListener);
         zoneView.addTextChangedListener(zoneTextWatcher);
     }
-    private void wireSpinners(View v){
 
-        //Create the array of spinner choices from the Types of Coordinates defined
-        //The order of these is used when an item is selected, so if you change these,
-        // change the item selected listener as well
-        String [] distanceUnits = new String[]{ CCSettings.sMetersString,
-                                                CCSettings.sFeetString,
-                                                CCSettings.sIntFeetString};
-
-        String [] dataSourceTypes = new String[]{   getString(R.string.select_data_source),
-                                                    getString(R.string.manual_wgs_data_source),
-                                                    getString(R.string.manual_spcs_data_source),
-                                                    getString(R.string.manual_utm_data_source),
-                                                    getString(R.string.phone_gps),
-                                                    getString(R.string.external_gps),
-                                                    getString(R.string.cell_tower_triangulation)};
-
-
-        //Then initialize the spinner itself
-
-        Spinner distUnitsSpinner           = v.findViewById(R.id.distance_units_spinner);
-        Spinner dataSourceSpinner          = v.findViewById(R.id.data_source_spinner);
-
-        // Create the ArrayAdapters using the Activities context AND
-        // the string array and a default spinner layout
-        ArrayAdapter<String> duAdapter = new ArrayAdapter<>(getActivity(),
-                                                            android.R.layout.simple_spinner_item,
-                                                            distanceUnits);
-
-
-        ArrayAdapter<String> dsAdapter = new ArrayAdapter<>(getActivity(),
-                                                            android.R.layout.simple_spinner_item,
-                                                            dataSourceTypes);
-
-
-        // Specify the layout to use when the list of choices appears
-        duAdapter .setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        dsAdapter .setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-        // Apply the adapter to the spinner
-        distUnitsSpinner    .setAdapter(duAdapter);
-        dataSourceSpinner   .setAdapter(dsAdapter);
-
-        //attach the listener to the spinner
-        distUnitsSpinner .setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                //reset the new value
-                MainActivity activity = (MainActivity)getActivity();
-                if (activity != null) {
-                    //Based on the order presented to the user,
-                    // which should be in the same order as the constants: Settings.sMeter, etc
-
-                    CCSettings.setDistUnits(activity, position);
-                    disableSaveButton();
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-        dataSourceSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
-                int msg;
-
-                switch(position){
-                    case CCSettings.sDataSourceNoneSelected:
-
-                        msg = R.string.select_data_source;
-                        break;
-                    case CCSettings.sDataSourceWGSManual:
-                        msg = R.string.manual_wgs_data_source;
-
-                        break;
-                    case CCSettings.sDataSourceSPCSManual:
-                        msg = R.string.manual_spcs_data_source;
-                        break;
-                    case CCSettings.sDataSourceUTMManual:
-                        msg = R.string.manual_utm_data_source;
-                        break;
-                    case CCSettings.sDataSourcePhoneGps:
-
-                        if (isGPSEnabled()) {
-                            msg = R.string.phone_gps;
-                        } else {
-                            msg = R.string.phone_gps_not_available;
-                        }
-
-                        break;
-                    case CCSettings.sDataSourceExternalGps:
-                        //msg = R.string.external_gps;
-                        msg = R.string.external_gps_not_available;
-                        break;
-                    case CCSettings.sDataSourceCellTowerTriangulation:
-                        //msg = R.string.cell_tower_triangulation;
-                        msg = R.string.cell_tower_triangu_not_available;
-                        break;
-                    default:
-                        msg = R.string.select_data_source;
-                }
-
-                String selectMsg = getString(R.string.selected_data_source, getString(msg) );
-
-                Utilities.getInstance().showStatus(getActivity(), selectMsg);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-                //for now, do nothing
-            }
-        });
-
-    }
-
-    private boolean isGPSEnabled() {
-        MainActivity activity = (MainActivity) getActivity();
-        if (activity == null) return false;
-
-        LocationManager lm = (LocationManager) activity.getSystemService(Context.LOCATION_SERVICE);
-        return ((lm != null) && (lm.isProviderEnabled(LocationManager.GPS_PROVIDER)));
-
-    }
 
     /* a Better more complete check
     public boolean isLocationServicesAvailable() {
@@ -705,18 +373,20 @@ public class SettingsFragment extends Fragment implements CompoundButton.OnCheck
 */
 
     private void initializeUI(View v) {
+        MainActivity activity = (MainActivity)getActivity();
+        if (activity == null)return;
 
         initializeSwitches(v);
-        initializeSpinners(v);
+        Utilities.getInstance().initializeSpinners(activity, v);
         initializeZone(v);
         initializeHeightMean(v);
         initializePrecision(v);
-        initializeOffsets(v);
+        Utilities.getInstance().initializeOffsets(activity, v);
 
-        disableSaveButton();
     }
     private void initializeSwitches(View v) {
         MainActivity activity = (MainActivity)getActivity();
+        if (activity == null)return;
 
         //
         //Switches
@@ -766,30 +436,7 @@ public class SettingsFragment extends Fragment implements CompoundButton.OnCheck
         caPrecisionView.setText(precisionString);
 
     }
-    private void initializeOffsets(View v) {
-        MainActivity activity = (MainActivity)getActivity();
 
-
-        //
-        // Offset Inputs
-        //
-
-        final EditText distanceOffsetView   = v.findViewById(R.id.offsetDistanceInput);
-        final EditText headingOffsetView    = v.findViewById(R.id.offsetHeadingInput);
-        final EditText elevationOffsetView  = v.findViewById(R.id.offsetElevationInput);
-
-        double offset = CCSettings.getDistanceOffset(activity);
-        String offsetString = String.valueOf(offset);
-        distanceOffsetView.setText(offsetString);
-
-        offset = CCSettings.getHeadingOffset(activity);
-        offsetString = String.valueOf(offset);
-        headingOffsetView.setText(offsetString);
-
-        offset = CCSettings.getElevationOffset(activity);
-        offsetString = String.valueOf(offset);
-        elevationOffsetView.setText(offsetString);
-    }
     private void initializeZone(View v) {
         MainActivity activity = (MainActivity)getActivity();
 
@@ -820,22 +467,7 @@ public class SettingsFragment extends Fragment implements CompoundButton.OnCheck
         maxMeanView.setText(String.valueOf(maxMean));
 
     }
-    private void initializeSpinners(View v) {
-        MainActivity activity = (MainActivity)getActivity();
 
-        //
-        // Spinners
-        //
-        Spinner distUnitsSpinner           = v.findViewById(R.id.distance_units_spinner);
-        Spinner dataSourceSpinner          = v.findViewById(R.id.data_source_spinner);
-
-        int position = CCSettings.getDistanceUnits(activity);
-        distUnitsSpinner.setSelection(position);
-
-        position = CCSettings.getDataSource(activity);
-        dataSourceSpinner.setSelection(position);
-
-    }
 
     void    updateStateUI(MainActivity activity, View v, int zone){
         TextView stateView   = v.findViewById(R.id.settingsSpcStateOutput);
@@ -876,7 +508,6 @@ public class SettingsFragment extends Fragment implements CompoundButton.OnCheck
             }
 
         }
-        disableSaveButton();
         return true;
     }
 
@@ -888,25 +519,8 @@ public class SettingsFragment extends Fragment implements CompoundButton.OnCheck
 
 
     //***********************************/
-    //****     Save Button        *******/
+    //****        Save            *******/
     //***********************************/
-
-    void enableSaveButton(){
-        View v = getView();
-        if (v == null)return;
-
-        Button saveButton = v.findViewById(R.id.settingSaveButton);
-        saveButton.setEnabled(true);
-        saveButton.setTextColor(Color.BLACK);
-    }
-    void disableSaveButton(){
-        View v = getView();
-        if (v == null)return;
-
-        Button saveButton = v.findViewById(R.id.settingSaveButton);
-        saveButton.setEnabled(false);
-        saveButton.setTextColor(Color.GRAY);
-    }
 
     boolean savePrecisions(){
         MainActivity activity = (MainActivity)getActivity();
@@ -951,44 +565,6 @@ public class SettingsFragment extends Fragment implements CompoundButton.OnCheck
             CCSettings.setCAPrecision(activity, CCSettings.sCAPrcDefault);
         }
 
-        disableSaveButton();
-        return true;
-    }
-    boolean saveOffsets(){
-        MainActivity activity = (MainActivity)getActivity();
-        if (activity == null)return false;
-
-        View v = getView();
-        if (v == null)return false;
-
-
-        final EditText distanceOffsetView   = v.findViewById(R.id.offsetDistanceInput);
-        final EditText headingOffsetView    = v.findViewById(R.id.offsetHeadingInput);
-        final EditText elevationOffsetView  = v.findViewById(R.id.offsetElevationInput);
-
-
-        String offsetString = distanceOffsetView.getText().toString().trim();
-        if (!Utilities.isEmpty(offsetString)) {
-            CCSettings.setDistanceOffset(activity, Double.valueOf(offsetString));
-        } else {
-            CCSettings.setDistanceOffset(activity, CCSettings.sDistanceOffsetDefault);
-        }
-
-        offsetString = headingOffsetView.getText().toString().trim();
-        if (!Utilities.isEmpty(offsetString)) {
-            CCSettings.setHeadingOffset(activity, Double.valueOf(offsetString));
-        } else {
-            CCSettings.setHeadingOffset(activity, CCSettings.sHeadingOffsetDefault);
-        }
-
-        offsetString = elevationOffsetView.getText().toString().trim();
-        if (!Utilities.isEmpty(offsetString)) {
-            CCSettings.setElevationOffset(activity, Double.valueOf(offsetString));
-        } else {
-            CCSettings.setElevationOffset(activity, CCSettings.sElevationOffsetDefault);
-        }
-
-        disableSaveButton();
         return true;
     }
     boolean saveHeightMean(){
@@ -1017,16 +593,14 @@ public class SettingsFragment extends Fragment implements CompoundButton.OnCheck
             CCSettings.setNumMean(activity, CCSettings.sNumMeanDefault);
         }
 
-        disableSaveButton();
         return true;
     }
-    void saveZone(){
+    boolean saveZone(){
         MainActivity activity = (MainActivity)getActivity();
-        if (activity == null)return ;
+        if (activity == null)return false;
 
         View v = getView();
-        if (v == null)return ;
-
+        if (v == null)return false;
 
         EditText zoneView    = v.findViewById(R.id.settingsSpcZoneInput);
 
@@ -1037,9 +611,7 @@ public class SettingsFragment extends Fragment implements CompoundButton.OnCheck
         } else {
             CCSettings.setZone(activity, CCSettings.sZoneDefault);
         }
-
-
-        disableSaveButton();
+        return true;
     }
 
 }

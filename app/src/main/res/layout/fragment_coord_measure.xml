@@ -2237,6 +2237,137 @@
 
             </LinearLayout>
 
+
+
+
+            <!-- Offsets -->
+            <TextView
+
+                android:text="@string/offset_label"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_weight="33"
+                android:gravity="center"
+
+                android:textColor="@color/colorTextBlack"
+                android:background="@color/colorScreenBackground"
+                />
+
+            <!-- Row : Offset Distance -->
+            <LinearLayout
+
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_gravity="center_horizontal"
+                android:paddingTop="5dp"
+                >
+                <TextView
+                    android:labelFor="@+id/offsetDistanceInput"
+                    android:text="@string/offset_distance_label"
+                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:layout_weight="33"
+                    android:gravity="end"
+
+                    android:textColor="@color/colorTextBlack"
+                    android:background="@color/colorScreenBackground"
+                    />
+                <EditText
+                    android:id="@id/offsetDistanceInput"
+
+                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:layout_weight="67"
+                    android:gravity="center"
+
+                    android:inputType="numberDecimal"
+                    android:imeOptions="flagNoExtractUi"
+                    android:layout_marginEnd="@dimen/row_cap_margin"
+
+                    android:textColor="@color/colorTextBlack"
+                    android:enabled="true"
+                    android:background="@color/colorWhite"
+                    />
+
+            </LinearLayout>
+
+            <!-- Row : Offset Heading -->
+            <LinearLayout
+
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_gravity="center_horizontal"
+                android:paddingTop="5dp"
+                >
+                <TextView
+                    android:labelFor="@+id/offsetHeadingInput"
+                    android:text="@string/offset_heading_label"
+                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:layout_weight="33"
+                    android:gravity="end"
+
+                    android:textColor="@color/colorTextBlack"
+                    android:background="@color/colorScreenBackground"
+                    />
+                <EditText
+                    android:id="@id/offsetHeadingInput"
+
+                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:layout_weight="67"
+                    android:gravity="center"
+
+                    android:inputType="numberDecimal"
+                    android:imeOptions="flagNoExtractUi"
+                    android:layout_marginEnd="@dimen/row_cap_margin"
+
+                    android:textColor="@color/colorTextBlack"
+                    android:enabled="true"
+                    android:background="@color/colorWhite"
+                    />
+
+            </LinearLayout>
+
+            <!-- Row : Offset Elevation -->
+            <LinearLayout
+
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_gravity="center_horizontal"
+                android:paddingTop="5dp"
+                >
+                <TextView
+                    android:labelFor="@+id/offsetElevationInput"
+                    android:text="@string/offset_elevation_label"
+                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:layout_weight="33"
+                    android:gravity="end"
+
+                    android:textColor="@color/colorTextBlack"
+                    android:background="@color/colorScreenBackground"
+                    />
+                <EditText
+                    android:id="@id/offsetElevationInput"
+
+                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:layout_weight="67"
+                    android:gravity="center"
+
+                    android:inputType="numberDecimal"
+                    android:imeOptions="flagNoExtractUi"
+                    android:layout_marginEnd="@dimen/row_cap_margin"
+
+                    android:textColor="@color/colorTextBlack"
+                    android:enabled="true"
+                    android:background="@color/colorWhite"
+                    />
+
+            </LinearLayout>
+
+
         </LinearLayout>
 
     </ScrollView>

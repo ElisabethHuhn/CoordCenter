@@ -14,12 +14,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
-
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.SphericalUtil;
@@ -139,26 +137,31 @@ public class CoordinateMeasureFragment extends Fragment implements GpsStatus.Lis
                              ViewGroup container,
                              Bundle savedInstanceState) {
 
+        MainActivity activity = (MainActivity)getActivity();
+        if (activity == null) return null;
+
         //Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_coord_measure, container, false);
 
+        Utilities utilities = Utilities.getInstance();
         wireWidgets(v);
         wireSpinners(v);
+        utilities.wireOffsets (activity, v);
 
         initializeUI(v);
-        initializeSpinners(v);
+        utilities.initializeSpinners(activity, v);
+        utilities.initializeOffsets (activity, v);
 
         initializeMeanProgressUI(v);
 
-        MainActivity activity = (MainActivity)getActivity();
-        if (activity != null) {
-            //get rid of the soft keyboard if it is visible
 
-            EditText aboutWho = v.findViewById(R.id.gpsWgs84LatDirInput);
-            Utilities.getInstance().showSoftKeyboard(activity, aboutWho);
-            //Utilities.getInstance().hideSoftKeyboard(activity);
-            //Utilities.getInstance().hideKeyboard(activity);
-        }
+        //get rid of the soft keyboard if it is visible
+
+        EditText aboutWho = v.findViewById(R.id.gpsWgs84LatDirInput);
+        Utilities.getInstance().showSoftKeyboard(activity, aboutWho);
+        //Utilities.getInstance().hideSoftKeyboard(activity);
+        //Utilities.getInstance().hideKeyboard(activity);
+
         isFirst = true;
 
         return v;
@@ -389,66 +392,15 @@ public class CoordinateMeasureFragment extends Fragment implements GpsStatus.Lis
     }
     private void wireSpinners(View v){
 
-        //Create the array of spinner choices from the Types of Coordinates defined
-        //The order of these is used when an item is selected, so if you change these,
-        // change the item selected listener as well
-        String [] distanceUnits = new String[]{ CCSettings.sMetersString,
-                                                CCSettings.sFeetString,
-                                                CCSettings.sIntFeetString};
+        MainActivity activity = (MainActivity)getActivity();
+        if (activity == null)return;
 
-        String [] dataSourceTypes = new String[]{   getString(R.string.select_data_source),
-                                                    getString(R.string.manual_wgs_data_source),
-                                                    getString(R.string.manual_spcs_data_source),
-                                                    getString(R.string.manual_utm_data_source),
-                                                    getString(R.string.phone_gps),
-                                                    getString(R.string.external_gps),
-                                                    getString(R.string.cell_tower_triangulation)};
+        //Do most of the stuff in common
+        Utilities.getInstance().wireSpinners(activity, v);
 
-
-        //Then initialize the spinner itself
-
-        Spinner distUnitsSpinner           = v.findViewById(R.id.distance_units_spinner);
+        //But need a different listener here
         Spinner dataSourceSpinner          = v.findViewById(R.id.data_source_spinner);
 
-        // Create the ArrayAdapters using the Activities context AND
-        // the string array and a default spinner layout
-        ArrayAdapter<String> duAdapter = new ArrayAdapter<>(getActivity(),
-                                                            android.R.layout.simple_spinner_item,
-                                                            distanceUnits);
-
-
-        ArrayAdapter<String> dsAdapter = new ArrayAdapter<>(getActivity(),
-                android.R.layout.simple_spinner_item,
-                dataSourceTypes);
-
-
-        // Specify the layout to use when the list of choices appears
-        duAdapter .setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        dsAdapter .setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-        // Apply the adapter to the spinner
-        distUnitsSpinner    .setAdapter(duAdapter);
-        dataSourceSpinner   .setAdapter(dsAdapter);
-
-        //attach the listener to the spinner
-        distUnitsSpinner .setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                //reset the new value
-                MainActivity activity = (MainActivity)getActivity();
-                if (activity != null) {
-                    //Based on the order presented to the user,
-                    // which should be in the same order as the constants: Settings.sMeter, etc
-
-                    CCSettings.setDistUnits(activity, position);
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
         dataSourceSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -777,22 +729,7 @@ public class CoordinateMeasureFragment extends Fragment implements GpsStatus.Lis
         spcNorthingLabel  .setText(getString(R.string.northing_label));
         spcEastingLabel   .setText(getString(R.string.easting_label));
     }
-    private void initializeSpinners(View v) {
-        MainActivity activity = (MainActivity)getActivity();
 
-        //
-        // Spinners
-        //
-        Spinner distUnitsSpinner           = v.findViewById(R.id.distance_units_spinner);
-        Spinner dataSourceSpinner          = v.findViewById(R.id.data_source_spinner);
-
-        int position = CCSettings.getDistanceUnits(activity);
-        distUnitsSpinner.setSelection(position);
-
-        position = CCSettings.getDataSource(activity);
-        dataSourceSpinner.setSelection(position);
-
-    }
 
     //******************************************************************//
     //            Button Handlers                                       //
@@ -804,6 +741,7 @@ public class CoordinateMeasureFragment extends Fragment implements GpsStatus.Lis
     //******************************************************************//
     void handleNmeaReceived(long timestamp, String nmea) {
 
+        //update ui with DOP values
         showDop();
 
 
@@ -842,7 +780,7 @@ public class CoordinateMeasureFragment extends Fragment implements GpsStatus.Lis
                         mMeanToken.setFirstPointInMean(false);
                     }
 
-                    updateNmeaUI(mMeanToken.getLastCoordinate(), mNmeaData);
+                    updateNmeaUI(mMeanToken.getLastCoordinate());
 
                     updateMeanUI(meanCoordinate, mMeanToken);
 
@@ -863,7 +801,7 @@ public class CoordinateMeasureFragment extends Fragment implements GpsStatus.Lis
                 coordinateWGS84 = new CoordinateWGS84((MainActivity)getActivity(), nmeaData);
 
                 //update the UI from the coordinate
-                updateNmeaUI(coordinateWGS84, nmeaData);
+                updateNmeaUI(coordinateWGS84);
             }
 
         } catch (RuntimeException e){
@@ -957,14 +895,14 @@ public class CoordinateMeasureFragment extends Fragment implements GpsStatus.Lis
     //       Update UI with a coordinate                                //
     //******************************************************************//
 
-    private void updateNmeaUI(CoordinateWGS84 coordinateWGS84, NmeaSentence nmeaData){
+    private void updateNmeaUI(CoordinateWGS84 coordinateWGS84){
         View v = getView();
         if (v == null)return ;
 
         //Time
         TextView TimestampOutput = v.findViewById(R.id.gpsWgs84TimestampOutput);
 
-        String nmeaTimeString = String.format(Locale.getDefault(), "%.0f", nmeaData.getTime());
+        //String nmeaTimeString = String.format(Locale.getDefault(), "%.0f", nmeaData.getTime());
         //String wgsTimeString  = String.format(Locale.getDefault(), "%.0f", coordinateWGS84.getTime());
         //TimeOutput.setText(nmeaTimeString);
                 //Eventually fix time between nmea and coordinate WGS84
@@ -989,7 +927,7 @@ public class CoordinateMeasureFragment extends Fragment implements GpsStatus.Lis
         long timeStamp = coordinateWGS84.getTime();
         String timestampString = Utilities.getDateTimeString(timeStamp);
 
-        String timeString = String.format(Locale.getDefault(), "%d", coordinateWGS84.getTime());
+        //String timeString = String.format(Locale.getDefault(), "%d", coordinateWGS84.getTime());
 
         if (timeStamp == 0){
             timestampString = "0";
@@ -1656,10 +1594,20 @@ public class CoordinateMeasureFragment extends Fragment implements GpsStatus.Lis
         double offsetHeading   = CCSettings.getHeadingOffset  (activity);
         double offsetElevation = CCSettings.getElevationOffset(activity);
 
+        //distance must be in meters
+        double distanceMeters = offsetDistance;
+        int distanceUnits = CCSettings.getDistanceUnits(activity);
+
+        if (distanceUnits == CCSettings.sFeet){
+            distanceMeters = Utilities.convertFeetToMeters(offsetDistance);
+        } else if (distanceUnits == CCSettings.sIntFeet){
+            distanceMeters = Utilities.convertIFeetToMeters(offsetDistance);
+        }
+
         //calculate the location using the offset
 
         LatLng fromLocation = new LatLng(coordinateWGS84.getLatitude(), coordinateWGS84.getLongitude());
-        LatLng toLocation = SphericalUtil.computeOffset(fromLocation, offsetDistance, offsetHeading);
+        LatLng toLocation = SphericalUtil.computeOffset(fromLocation, distanceMeters, offsetHeading);
 
         double newElevation = coordinateWGS84.getElevation() + offsetElevation;
 
@@ -2520,7 +2468,6 @@ public class CoordinateMeasureFragment extends Fragment implements GpsStatus.Lis
     }
     private void    startGps(){
 
-        // TODO: 6/23/2017 Show gps status on UI
         if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED ||
                 ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)

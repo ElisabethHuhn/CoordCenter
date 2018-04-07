@@ -172,7 +172,7 @@ abstract class Coordinate {
             distValue = Utilities.convertFeetToMeters(distValue);
         }
         if (distUnits == CCSettings.sIntFeet){
-            distValue = Utilities.convertFeetToMeters(distValue);
+            distValue = Utilities.convertIFeetToMeters(distValue);
         }
 
         return distValue;
